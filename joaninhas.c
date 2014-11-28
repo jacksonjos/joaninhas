@@ -3,22 +3,23 @@
 #include <omp.h>
 
 enum tipos {
-    NADA,
-    JOANINHA,
-    CALOR,
-    FRIO,
+	NADA,
+	JOANINHA,
+	CALOR,
+	FRIO,
 	BORDA
 };
 
 typedef enum tipos hex_tipos;
 
 struct hex {
-    hex_tipos tipo;
-    unsigned int semente;
-    double temperatura;
+	hex_tipos tipo;
+	unsigned int semente;
+	double temperatura;
 	int n; /* duração de ciclos das fontes de calor e frio */
 };
 
+extern int rand_r (unsigned int *__seed) __THROW; /* senão o compilador idiota reclama que não está declarada ¬¬' */
 struct hex **init(int s, int L, int A, int num_joaninhas);
 void imprime(struct hex **hexes, int L, int A);
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf);
@@ -30,7 +31,7 @@ int main(int argc, char **argv) {
 	double C, Tmin, Tmax, pc, pf;
 	struct hex **hexes;
 	int iter, ii, jj;
-	
+
 	if (argc != 14) {
 		fprintf(stderr, "Usage: %s L A j s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
 		exit(1);
@@ -79,7 +80,7 @@ int main(int argc, char **argv) {
 					sorteia_fonte_calor_ou_frio(&hexes[ii][jj], pc, nc, pf, nf);
 
 		/* joaninhas */
-		for (ii = 0; ii < L; ii++) { 
+		for (ii = 0; ii < L; ii++) {
 			for (jj = 0; jj < A; jj++) {
 				if (hexes[ii][jj].tipo == JOANINHA) {
 					calcula_temperatura(&hexes[ii][jj], C);
@@ -104,8 +105,6 @@ int main(int argc, char **argv) {
 						/* aqui temos que calcular uma pré-movimentação da joaninha */
 					}
 				}
-				/* atualiza semente */
-				hexes[ii][jj].semente = ((ii + 1)*hexes[ii][jj].semente + jj) % RAND_MAX;
 			}
 		}
 		/* aqui precisamos resolver os conflitos de movimentação */
@@ -125,18 +124,18 @@ int main(int argc, char **argv) {
 }
 
 struct hex **init(int s, int L, int A, int num_joaninhas) {
-    int i, j, ii, jj;
+	int i, j, ii, jj;
 	struct hex **hexes;
-    
-    hexes = malloc(L*sizeof(struct hex *));
-    for (i = 0; i < L; i++) {
-	    hexes[i] = malloc(A*sizeof(struct hex));
-        for (j = 0; j < A; j++) {
-            hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
-            hexes[i][j].temperatura = 4;
-        }
-    }
-    srand(s);
+
+	hexes = malloc(L*sizeof(struct hex *));
+	for (i = 0; i < L; i++) {
+		hexes[i] = malloc(A*sizeof(struct hex));
+		for (j = 0; j < A; j++) {
+			hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
+			hexes[i][j].temperatura = 4;
+		}
+	}
+	srand(s);
 	for (i = 0; i < num_joaninhas; i++) {
 		ii = rand() % L;
 		jj = rand() % A;
@@ -148,25 +147,24 @@ struct hex **init(int s, int L, int A, int num_joaninhas) {
 }
 
 void imprime(struct hex **hexes, int L, int A) {
-    int i, j;
-    
-    for (i = 0; i < L; i++) {
-        for (j = 0; j < A; j++) {
-            printf("| %11u ", hexes[i][j].semente);
-        }
-        printf("|\n");
-    }
+	int i, j;
+
+	for (i = 0; i < L; i++) {
+		for (j = 0; j < A; j++) {
+			printf("| %11u ", hexes[i][j].semente);
+		}
+		printf("|\n");
+	}
 	printf("\n");
 }
 
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf) {
-	srand(hex->semente);
 	/* fonte de calor deve ser sorteada primeiro */
-	if ((double) rand()/RAND_MAX <= pc) {
+	if ((double) rand_r(&hex->semente)/RAND_MAX <= pc) {
 		hex->tipo = CALOR;
 		hex->n = nc;
 	}
-	else if ((double) rand()/RAND_MAX <= pf) {
+	else if ((double) rand_r(&hex->semente)/RAND_MAX <= pf) {
 		hex->tipo = FRIO;
 		hex->n = nf;
 	}
