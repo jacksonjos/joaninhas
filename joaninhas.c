@@ -161,6 +161,7 @@ void imprime(struct hex **hexes, int L, int A) {
 
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf) {
 	srand(hex->semente);
+	/* fonte de calor deve ser sorteada primeiro */
 	if ((double) rand()/RAND_MAX <= pc) {
 		hex->tipo = CALOR;
 		hex->n = nc;

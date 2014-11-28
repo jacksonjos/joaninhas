@@ -17,4 +17,4 @@ make
 #P    número de processadores (threads) para execução
 
 #     L A j  s       C   Tmin Tmax  pc  nc pf  nf T P
-./exe 5 6 10 1000000 5.0 0.0  100.0 0.2 3  0.3 4  1 4
+./joaninhas 5 6 10 1000000 5.0 0.0  100.0 0.2 3  0.3 4  1 4
