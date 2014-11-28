@@ -4,8 +4,8 @@
 enum tipos {
     NADA,
     JOANINHA,
-    FRIO,
-    CALOR
+    CALOR,
+    FRIO
 };
 
 typedef enum tipos hex_tipos;
@@ -14,17 +14,19 @@ struct hex {
     hex_tipos tipo;
     unsigned int semente;
     double temperatura;
-	int nc, nf; /* duração de ciclos das fontes de calor e frio */
+	int n; /* duração de ciclos das fontes de calor e frio */
 };
 
 struct hex **init(int s, int L, int A, int num_joaninhas);
 void imprime(struct hex **hexes, int L, int A);
+void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf);
 
 int main(int argc, char **argv) {
 	int L, A, j, C, nc, nf, T, P;
 	unsigned int s;
 	double Tmin, Tmax, pc, pf;
 	struct hex **hexes;
+	int iter, ii, jj;
 	
 	if (argc != 14) {
 		fprintf(stderr, "Usage: %s L A j s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
@@ -65,6 +67,27 @@ int main(int argc, char **argv) {
 	hexes = init(s, L, A, j);
 	imprime(hexes, L, A);
 
+	/* a simulação acontece aqui */
+	for (iter = 0; iter < T; iter++) {
+		/* sorteia fontes de calor e frio */
+		for (ii = 0; ii < L; ii++) {
+			for (jj = 0; jj < A; jj++) {
+				/* quando não há nada no hexágono, ou quando havia uma fonte que apagou na última rodada */
+				if (hexes[ii][jj].tipo == NADA ||
+						((hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) && hexes[ii][jj].n == 0)) {
+						sorteia_fonte_calor_ou_frio(&hexes[ii][jj], pc, nc, pf, nf);
+				}
+			}
+		}
+
+
+		/* calcula temperatura das joaninhas */
+		for (ii = 0; ii < L; ii++) {
+			for (jj = 0; jj < A; jj++) {
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -100,4 +123,16 @@ void imprime(struct hex **hexes, int L, int A) {
         }
         printf("|\n");
     }
+}
+
+void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf) {
+	srand(hex->semente);
+	if ((double) rand()/RAND_MAX <= pc) {
+		hex->tipo = CALOR;
+		hex->n = nc;
+	}
+	else if ((double) rand()/RAND_MAX <= pf) {
+		hex->tipo = FRIO;
+		hex->n = nf;
+	}
 }
