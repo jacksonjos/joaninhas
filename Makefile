@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-Wall -ansi -pedantic -O2
+FLAGS=-Wall -std=c11 -pedantic -O3
 
 main: joaninhas.c
 	$(CC) joaninhas.c -o exe

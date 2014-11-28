@@ -1,0 +1,20 @@
+#!/bin/bash
+
+make flags
+
+#L    largura da matriz
+#A    altura da matriz
+#j    número de joaninhas
+#s    semente para o gerador aleatório
+#C    constante de emissão de calor da joaninha
+#Tmin menor temperatura que a joaninha considera confortável
+#Tmax maior temperatura que a joaninha considera confortável
+#pc   probabilidade, por hexágono, de aparecer uma fonte de calor
+#nc   duração em ciclos da fonte de calor
+#pf   probabilidade, por hexágono, de aparecer uma fonte de frio
+#nf   duração em ciclos da fonte de frio
+#T    número de ciclos de simulação
+#P    número de processadores (threads) para execução
+
+#     L A j  s  C Tmin Tmax pc  nc pf  nf T   P
+./exe 5 6 10 80 5 0    100  0.5 3  0.4 4  100 4

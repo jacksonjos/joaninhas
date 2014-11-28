@@ -12,7 +12,6 @@ typedef enum tipos hex_tipos;
 
 struct hex {
     double temperatura;
-    double Pc, Pf; /* probabilidade de aparecer fonte de frio ou calor */
     hex_tipos tipo;
     int semente;
 };
@@ -20,17 +19,31 @@ struct hex {
 void init(struct hex **hexes, int s, int L, int A);
 void imprime(struct hex **hexes, int L, int A);
 
-
 int main(int argc, char **argv) {
 	int L, A, j, s, C, nc, nf, T, P;
 	double Tmin, Tmax, pc, pf;
 	struct hex **hexes;
 	
-/*	if (argc != 0) {
+	if (argc != 0) {
 		fprintf(stderr, "Usage: %s L A j s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
 		exit(1);
 	}
 	else {
+		/*
+		L    largura da matriz
+		A    altura da matriz
+		j    número de joaninhas
+		s    semente para o gerador aleatório
+		C    constante de emissão de calor da joaninha
+		Tmin menor temperatura que a joaninha considera confortável
+		Tmax maior temperatura que a joaninha considera confortável
+		pc   probabilidade, por hexágono, de aparecer uma fonte de calor
+		nc   duração em ciclos da fonte de calor
+		pf   probabilidade, por hexágono, de aparecer uma fonte de frio
+		nf   duração em ciclos da fonte de frio
+		T    número de ciclos de simulação
+		P    número de processadores (threads) para execução
+		*/
 		L = atoi(argv[1]);
 		A = atoi(argv[2]);
 		j = atoi(argv[3]);
@@ -45,12 +58,7 @@ int main(int argc, char **argv) {
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
 	}
-*/
 
-	L = 5;
-	A = 6;
-	s = 80;
-	
 	init(hexes, s, L, A);
 	imprime(hexes, L, A);
 
