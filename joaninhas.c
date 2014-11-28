@@ -179,9 +179,7 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 
 	if (par1 == par2) {
 		return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
-		
 	} else {
-		
 		if (par1 == 0) {
 			if (col1 > col2) {
 				return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
