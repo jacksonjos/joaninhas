@@ -20,28 +20,30 @@ struct hex {
 };
 
 extern int rand_r (unsigned int *__seed) __THROW; /* senão o compilador idiota reclama que não está declarada ¬¬' */
-struct hex **init(int s, int L, int A, int num_joaninhas);
-void imprime(struct hex **hexes, int L, int A);
-void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf);
+void init();
+void imprime();
+void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
-void calcula_temperatura(struct hex *hex, double C);
+void calcula_temperatura(struct hex *hex);
+
+int L, A, J, nc, nf, T, P;
+unsigned int s;
+double C, Tmin, Tmax, pc, pf;
+struct hex **hexes;
+double melhor_vizinho_i, melhor_vizinho_j;
 
 int main(int argc, char **argv) {
-	int L, A, j, nc, nf, T, P;
-	unsigned int s;
-	double C, Tmin, Tmax, pc, pf;
-	struct hex **hexes;
 	int iter, ii, jj;
 
 	if (argc != 14) {
-		fprintf(stderr, "Usage: %s L A j s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
+		fprintf(stderr, "Usage: %s L A J s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
 		exit(1);
 	}
 	else {
 		/*
 		L    largura da matriz
 		A    altura da matriz
-		j    número de joaninhas
+		J    número de joaninhas
 		s    semente para o gerador aleatório
 		C    constante de emissão de calor da joaninha
 		Tmin menor temperatura que a joaninha considera confortável
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
 		*/
 		L = atoi(argv[1]);
 		A = atoi(argv[2]);
-		j = atoi(argv[3]);
+		J = atoi(argv[3]);
 		s = atoi(argv[4]);
 		C = atof(argv[5]);
 		Tmin = atof(argv[6]);
@@ -69,8 +71,8 @@ int main(int argc, char **argv) {
 	}
 	omp_set_num_threads(P);
 
-	hexes = init(s, L, A, j);
-	imprime(hexes, L, A);
+	init();
+	imprime();
 
 	/* a simulação acontece aqui */
 	for (iter = 0; iter < T; iter++) {
@@ -78,33 +80,15 @@ int main(int argc, char **argv) {
 		for (ii = 0; ii < L; ii++)
 			for (jj = 0; jj < A; jj++)
 				if (hexes[ii][jj].tipo == NADA)
-					sorteia_fonte_calor_ou_frio(&hexes[ii][jj], pc, nc, pf, nf);
+					sorteia_fonte_calor_ou_frio(&hexes[ii][jj]);
 
 		/* joaninhas */
 		for (ii = 0; ii < L; ii++) {
 			for (jj = 0; jj < A; jj++) {
 				if (hexes[ii][jj].tipo == JOANINHA) {
-					calcula_temperatura(&hexes[ii][jj], C);
-					if (hexes[ii][jj].temperatura < Tmin || hexes[ii][jj].temperatura > Tmax) {
-						/* joaninha quer se mover, calcula temperatura dos vizinhos */
-						if (ii % 2 == 0) { /* linha par */
-							calcula_temperatura(&hexes[ii-1][jj], C);
-							calcula_temperatura(&hexes[ii-1][jj+1], C);
-							calcula_temperatura(&hexes[ii][jj-1], C);
-							calcula_temperatura(&hexes[ii][jj+1], C);
-							calcula_temperatura(&hexes[ii+1][jj], C);
-							calcula_temperatura(&hexes[ii+1][jj+1], C);
-						}
-						else { /*linha impar */
-							calcula_temperatura(&hexes[ii-1][jj-1], C);
-							calcula_temperatura(&hexes[ii-1][jj], C);
-							calcula_temperatura(&hexes[ii][jj-1], C);
-							calcula_temperatura(&hexes[ii][jj+1], C);
-							calcula_temperatura(&hexes[ii+1][jj-1], C);
-							calcula_temperatura(&hexes[ii+1][jj], C);
-						}
-						/* aqui temos que calcular uma pré-movimentação da joaninha */
-					}
+					calcula_temperatura(&hexes[ii][jj]);
+					/* joaninha quer se mover, calcula temperatura dos vizinhos */
+					/* aqui temos que calcular uma pré-movimentação da joaninha */
 				}
 			}
 		}
@@ -118,15 +102,14 @@ int main(int argc, char **argv) {
 					if (hexes[ii][jj].n == 0) hexes[ii][jj].tipo = NADA;
 				}
 
-		imprime(hexes, L, A);
+		imprime();
 	}
 
 	return 0;
 }
 
-struct hex **init(int s, int L, int A, int num_joaninhas) {
+void init() {
 	int i, j, ii, jj;
-	struct hex **hexes;
     
     hexes = malloc(L*sizeof(struct hex *));
     for (i = 0; i < L; i++) {
@@ -137,17 +120,15 @@ struct hex **init(int s, int L, int A, int num_joaninhas) {
     }
     srand(s);
 
-	for (i = 0; i < num_joaninhas; i++) {
+	for (i = 0; i < J; i++) {
 		ii = rand() % L;
 		jj = rand() % A;
 		if (hexes[ii][jj].tipo == JOANINHA) i--; /* executa mesma iteração outra vez */
 		else hexes[ii][jj].tipo = JOANINHA;
 	}
-
-	return hexes;
 }
 
-void imprime(struct hex **hexes, int L, int A) {
+void imprime() {
 	int i, j;
 
 	for (i = 0; i < L; i++) {
@@ -159,7 +140,7 @@ void imprime(struct hex **hexes, int L, int A) {
 	printf("\n");
 }
 
-void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf) {
+void sorteia_fonte_calor_ou_frio(struct hex *hex) {
 	/* fonte de calor deve ser sorteada primeiro */
 	if ((double) rand_r(&hex->semente)/RAND_MAX <= pc) {
 		hex->tipo = CALOR;
@@ -173,19 +154,14 @@ void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, 
 
 double distancia(int lin1, int col1, int lin2, int col2) {
 	int par1, par2;
-	
+
 	par1 = lin1 % 2;
 	par2 = lin2 % 2;
 
-	if (par1 == par2)
-		return sqrt(pow(abs(col1-col2), 2) + 0.75*pow(abs(lin1-lin2), 2));
-		
-	if (par1 == 0)
-		return sqrt(pow(abs(col1-col2+0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
+	if (par1 == par2) return sqrt(pow(abs(col1-col2), 2) + 0.75*pow(abs(lin1-lin2), 2));
+	if (par1 == 0) return sqrt(pow(abs(col1-col2+0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
+	/* par1 == 1 */ return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
+}
 
-	/* par1 == 1 */
-	return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
-}		
-
-void calcula_temperatura(struct hex *hex, double C) {
+void calcula_temperatura(struct hex *hex) {
 }
