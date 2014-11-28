@@ -12,16 +12,17 @@ typedef enum tipos hex_tipos;
 
 struct hex {
     hex_tipos tipo;
-    int semente;
+    unsigned int semente;
     double temperatura;
 	int nc, nf; /* duração de ciclos das fontes de calor e frio */
 };
 
-struct hex **init(int s, int L, int A);
+struct hex **init(int s, int L, int A, int num_joaninhas);
 void imprime(struct hex **hexes, int L, int A);
 
 int main(int argc, char **argv) {
-	int L, A, j, s, C, nc, nf, T, P;
+	int L, A, j, C, nc, nf, T, P;
+	unsigned int s;
 	double Tmin, Tmax, pc, pf;
 	struct hex **hexes;
 	
@@ -58,28 +59,34 @@ int main(int argc, char **argv) {
 		nf = atoi(argv[11]);
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
-		printf("%d %d %d %d %d %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
+		printf("%d %d %d %u %d %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
 	}
 
-	hexes = init(s, L, A);
+	hexes = init(s, L, A, j);
 	imprime(hexes, L, A);
 
 	return 0;
 }
 
-struct hex **init(int s, int L, int A) {
-    int i, j;
+struct hex **init(int s, int L, int A, int num_joaninhas) {
+    int i, j, ii, jj;
 	struct hex **hexes;
     
-    srand(s);
     hexes = malloc(L*sizeof(struct hex *));
     for (i = 0; i < L; i++) {
 	    hexes[i] = malloc(A*sizeof(struct hex));
         for (j = 0; j < A; j++) {
-            hexes[i][j].semente = ((i + 1)*rand() + j) % RAND_MAX;
+            hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
             hexes[i][j].temperatura = 4;
         }
     }
+    srand(s);
+	for (i = 0; i < num_joaninhas; i++) {
+		ii = rand() % L;
+		jj = rand() % A;
+		if (hexes[ii][jj].tipo == JOANINHA) i--; /* executa mesma iteração outra vez */
+		else hexes[ii][jj].tipo = JOANINHA;
+	}
 
 	return hexes;
 }
@@ -89,7 +96,7 @@ void imprime(struct hex **hexes, int L, int A) {
     
     for (i = 0; i < L; i++) {
         for (j = 0; j < A; j++) {
-            printf("| %11d ", hexes[i][j].semente);
+            printf("| %11u ", hexes[i][j].semente);
         }
         printf("|\n");
     }
