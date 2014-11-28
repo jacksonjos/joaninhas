@@ -70,22 +70,22 @@ int main(int argc, char **argv) {
 	/* a simulação acontece aqui */
 	for (iter = 0; iter < T; iter++) {
 		/* sorteia fontes de calor e frio */
-		for (ii = 0; ii < L; ii++) {
-			for (jj = 0; jj < A; jj++) {
-				/* quando não há nada no hexágono, ou quando havia uma fonte que apagou na última rodada */
-				if (hexes[ii][jj].tipo == NADA ||
-						((hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) && hexes[ii][jj].n == 0)) {
-						sorteia_fonte_calor_ou_frio(&hexes[ii][jj], pc, nc, pf, nf);
-				}
-			}
-		}
+		for (ii = 0; ii < L; ii++)
+			for (jj = 0; jj < A; jj++)
+				if (hexes[ii][jj].tipo == NADA)
+					sorteia_fonte_calor_ou_frio(&hexes[ii][jj], pc, nc, pf, nf);
 
-
-		/* calcula temperatura das joaninhas */
-		for (ii = 0; ii < L; ii++) {
+		/* joaninhas */
+		for (ii = 0; ii < L; ii++) { 
 			for (jj = 0; jj < A; jj++) {
 			}
 		}
+
+		/* reseta hex quando fontes de calor e frio expiram */
+		for (ii = 0; ii < L; ii++)
+			for (jj = 0; jj < A; jj++)
+				if ((hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) && hexes[ii][jj].n == 0)
+					hexes[ii][jj].tipo = NADA;
 	}
 
 	return 0;
