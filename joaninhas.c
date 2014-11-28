@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
 enum tipos {
     NADA,
@@ -63,8 +64,8 @@ int main(int argc, char **argv) {
 		nf = atoi(argv[11]);
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
-		printf("%d %d %d %u %lf %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
 	}
+	omp_set_num_threads(P);
 
 	hexes = init(s, L, A, j);
 	imprime(hexes, L, A);
@@ -103,12 +104,11 @@ int main(int argc, char **argv) {
 						/* aqui temos que calcular uma pré-movimentação da joaninha */
 					}
 				}
-		/* aqui precisamos resolver os conflitos de movimentação */
-
 				/* atualiza semente */
 				hexes[ii][jj].semente = ((ii + 1)*hexes[ii][jj].semente + jj) % RAND_MAX;
 			}
 		}
+		/* aqui precisamos resolver os conflitos de movimentação */
 
 		/* atualiza fontes de calor e frio */
 		for (ii = 0; ii < L; ii++)

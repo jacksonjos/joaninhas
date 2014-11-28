@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make flags
+make
 
 #L    largura da matriz
 #A    altura da matriz
