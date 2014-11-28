@@ -1,11 +1,11 @@
 CC=gcc
-FLAGS=-Wall -std=c11 -pedantic -O3
+CFLAGS=-Wall -std=c11 -pedantic -O3 -fopenmp
 
 main: joaninhas.c
-	$(CC) joaninhas.c -o exe
+	$(CC) joaninhas.c -o joaninhas
 
 flags: joaninhas.c
-	$(CC) $(FLAGS) joaninhas.c -o exe -lm
+	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -lm
 
 clean:
-	rm -rf exe
+	rm -rf joaninhas
