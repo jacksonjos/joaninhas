@@ -20,11 +20,12 @@ struct hex {
 struct hex **init(int s, int L, int A, int num_joaninhas);
 void imprime(struct hex **hexes, int L, int A);
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf);
+void calcula_temperatura(struct hex *hex, double C);
 
 int main(int argc, char **argv) {
-	int L, A, j, C, nc, nf, T, P;
+	int L, A, j, nc, nf, T, P;
 	unsigned int s;
-	double Tmin, Tmax, pc, pf;
+	double C, Tmin, Tmax, pc, pf;
 	struct hex **hexes;
 	int iter, ii, jj;
 	
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
 		A = atoi(argv[2]);
 		j = atoi(argv[3]);
 		s = atoi(argv[4]);
-		C = atoi(argv[5]);
+		C = atof(argv[5]);
 		Tmin = atof(argv[6]);
 		Tmax = atof(argv[7]);
 		pc = atof(argv[8]);
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
 		nf = atoi(argv[11]);
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
-		printf("%d %d %d %u %d %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
+		printf("%d %d %d %u %lf %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
 	}
 
 	hexes = init(s, L, A, j);
@@ -78,6 +79,7 @@ int main(int argc, char **argv) {
 		/* joaninhas */
 		for (ii = 0; ii < L; ii++) { 
 			for (jj = 0; jj < A; jj++) {
+				calcula_temperatura(&hexes[ii][jj], C);
 			}
 		}
 
@@ -135,4 +137,7 @@ void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, 
 		hex->tipo = FRIO;
 		hex->n = nf;
 	}
+}
+
+void calcula_temperatura(struct hex *hex, double C) {
 }
