@@ -5,7 +5,8 @@ enum tipos {
     NADA,
     JOANINHA,
     CALOR,
-    FRIO
+    FRIO,
+	BORDA
 };
 
 typedef enum tipos hex_tipos;
@@ -79,15 +80,45 @@ int main(int argc, char **argv) {
 		/* joaninhas */
 		for (ii = 0; ii < L; ii++) { 
 			for (jj = 0; jj < A; jj++) {
-				calcula_temperatura(&hexes[ii][jj], C);
+				if (hexes[ii][jj].tipo == JOANINHA) {
+					calcula_temperatura(&hexes[ii][jj], C);
+					if (hexes[ii][jj].temperatura < Tmin || hexes[ii][jj].temperatura > Tmax) {
+						/* joaninha quer se mover, calcula temperatura dos vizinhos */
+						if (ii % 2 == 0) { /* linha par */
+							calcula_temperatura(&hexes[ii-1][jj], C);
+							calcula_temperatura(&hexes[ii-1][jj+1], C);
+							calcula_temperatura(&hexes[ii][jj-1], C);
+							calcula_temperatura(&hexes[ii][jj+1], C);
+							calcula_temperatura(&hexes[ii+1][jj], C);
+							calcula_temperatura(&hexes[ii+1][jj+1], C);
+						}
+						else { /*linha impar */
+							calcula_temperatura(&hexes[ii-1][jj-1], C);
+							calcula_temperatura(&hexes[ii-1][jj], C);
+							calcula_temperatura(&hexes[ii][jj-1], C);
+							calcula_temperatura(&hexes[ii][jj+1], C);
+							calcula_temperatura(&hexes[ii+1][jj-1], C);
+							calcula_temperatura(&hexes[ii+1][jj], C);
+						}
+						/* aqui temos que calcular uma pré-movimentação da joaninha */
+					}
+				}
+		/* aqui precisamos resolver os conflitos de movimentação */
+
+				/* atualiza semente */
+				hexes[ii][jj].semente = ((ii + 1)*hexes[ii][jj].semente + jj) % RAND_MAX;
 			}
 		}
 
-		/* reseta hex quando fontes de calor e frio expiram */
+		/* atualiza fontes de calor e frio */
 		for (ii = 0; ii < L; ii++)
 			for (jj = 0; jj < A; jj++)
-				if ((hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) && hexes[ii][jj].n == 0)
-					hexes[ii][jj].tipo = NADA;
+				if (hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) {
+					hexes[ii][jj].n--;
+					if (hexes[ii][jj].n == 0) hexes[ii][jj].tipo = NADA;
+				}
+
+		imprime(hexes, L, A);
 	}
 
 	return 0;
@@ -125,6 +156,7 @@ void imprime(struct hex **hexes, int L, int A) {
         }
         printf("|\n");
     }
+	printf("\n");
 }
 
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf) {
