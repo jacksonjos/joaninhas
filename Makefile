@@ -5,7 +5,7 @@ main: joaninhas.c
 	$(CC) joaninhas.c -o exe
 
 flags: joaninhas.c
-	$(CC) $(FLAGS) joaninhas.c -o exe
+	$(CC) $(FLAGS) joaninhas.c -o exe -lm
 
 clean:
 	rm -rf exe

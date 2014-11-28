@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 enum tipos {
     NADA,
@@ -20,6 +21,7 @@ struct hex {
 struct hex **init(int s, int L, int A, int num_joaninhas);
 void imprime(struct hex **hexes, int L, int A);
 void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, int nf);
+double distancia(int lin1, int col1, int lin2, int col2);
 
 int main(int argc, char **argv) {
 	int L, A, j, C, nc, nf, T, P;
@@ -48,6 +50,7 @@ int main(int argc, char **argv) {
 		T    número de ciclos de simulação
 		P    número de processadores (threads) para execução
 		*/
+/*
 		L = atoi(argv[1]);
 		A = atoi(argv[2]);
 		j = atoi(argv[3]);
@@ -63,6 +66,12 @@ int main(int argc, char **argv) {
 		P = atoi(argv[13]);
 		printf("%d %d %d %u %d %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
 	}
+	*/
+	
+	s = 80;
+	L = 4;
+	A = 6;
+	j = 9;
 
 	hexes = init(s, L, A, j);
 	imprime(hexes, L, A);
@@ -100,7 +109,6 @@ struct hex **init(int s, int L, int A, int num_joaninhas) {
 	    hexes[i] = malloc(A*sizeof(struct hex));
         for (j = 0; j < A; j++) {
             hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
-            hexes[i][j].temperatura = 4;
         }
     }
     srand(s);
@@ -136,3 +144,33 @@ void sorteia_fonte_calor_ou_frio(struct hex *hex, double pc, int nc, double pf, 
 		hex->n = nf;
 	}
 }
+
+double distancia(int lin1, int col1, int lin2, int col2) {
+	int par1, par2;
+	
+	par1 = lin1 % 2;
+	par2 = lin2 % 2;
+
+	if (par1 == par2) {
+		return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+		
+	} else {
+		
+		if (par1 == 0) {
+			if (col1 > col2) {
+				return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+			} else {
+				return sqrt(pow(abs(col1-col2+0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+			}
+		} else {
+			if (par1 == 1) {
+				if (col1 > col2) {
+					return sqrt(pow(abs(col1-col2-0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+				} else {
+					return sqrt(pow(abs(col1-col2-0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+				}
+			}
+		}
+	}
+	return 0;
+}		
