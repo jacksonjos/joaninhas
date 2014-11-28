@@ -183,9 +183,8 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 	if (par1 == 0)
 		return sqrt(pow(abs(col1-col2+0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
 
-	if (par1 == 1)
-		return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2)));
-
+	/* par1 == 1 */
+	return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
 }		
 
 void calcula_temperatura(struct hex *hex, double C) {
