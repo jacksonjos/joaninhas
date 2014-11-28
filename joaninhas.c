@@ -53,7 +53,6 @@ int main(int argc, char **argv) {
 		T    número de ciclos de simulação
 		P    número de processadores (threads) para execução
 		*/
-/*
 		L = atoi(argv[1]);
 		A = atoi(argv[2]);
 		j = atoi(argv[3]);
@@ -68,13 +67,6 @@ int main(int argc, char **argv) {
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
 	}
-<<<<<<< HEAD
-	*/
-	
-	s = 80;
-	L = 4;
-	A = 6;
-	j = 9;
 	omp_set_num_threads(P);
 
 	hexes = init(s, L, A, j);
