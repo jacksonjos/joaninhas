@@ -11,12 +11,13 @@ enum tipos {
 typedef enum tipos hex_tipos;
 
 struct hex {
-    double temperatura;
     hex_tipos tipo;
     int semente;
+    double temperatura;
+	int nc, nf; /* duração de ciclos das fontes de calor e frio */
 };
 
-void init(struct hex **hexes, int s, int L, int A);
+struct hex **init(int s, int L, int A);
 void imprime(struct hex **hexes, int L, int A);
 
 int main(int argc, char **argv) {
@@ -24,7 +25,7 @@ int main(int argc, char **argv) {
 	double Tmin, Tmax, pc, pf;
 	struct hex **hexes;
 	
-	if (argc != 0) {
+	if (argc != 14) {
 		fprintf(stderr, "Usage: %s L A j s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
 		exit(1);
 	}
@@ -57,31 +58,30 @@ int main(int argc, char **argv) {
 		nf = atoi(argv[11]);
 		T = atoi(argv[12]);
 		P = atoi(argv[13]);
+		printf("%d %d %d %d %d %lf %lf %lf %d %lf %d %d %d\n\n", L, A, j, s, C, Tmin, Tmax, pc, nc, pf, nf, T, P);
 	}
 
-	init(hexes, s, L, A);
+	hexes = init(s, L, A);
 	imprime(hexes, L, A);
 
 	return 0;
 }
 
-void init(struct hex **hexes, int s, int L, int A) {
+struct hex **init(int s, int L, int A) {
     int i, j;
+	struct hex **hexes;
     
-    hexes = (struct hex**) malloc(L * sizeof(struct hex*));
-	
     srand(s);
-    
-	printf("2:%d\n", s);
-    
+    hexes = malloc(L*sizeof(struct hex *));
     for (i = 0; i < L; i++) {
-	    hexes[i] = malloc(A * sizeof (struct hex));
+	    hexes[i] = malloc(A*sizeof(struct hex));
         for (j = 0; j < A; j++) {
-            hexes[i][j].semente = ((i+1) * rand()+j) % RAND_MAX;
+            hexes[i][j].semente = ((i + 1)*rand() + j) % RAND_MAX;
             hexes[i][j].temperatura = 4;
         }
-        printf("%d:%f\n", i, hexes[i][j].temperatura);
     }
+
+	return hexes;
 }
 
 void imprime(struct hex **hexes, int L, int A) {
@@ -89,10 +89,8 @@ void imprime(struct hex **hexes, int L, int A) {
     
     for (i = 0; i < L; i++) {
         for (j = 0; j < A; j++) {
-            printf("| %d ", hexes[i][j].semente);
+            printf("| %11d ", hexes[i][j].semente);
         }
         printf("|\n");
     }
-    printf("\n");
 }
-
