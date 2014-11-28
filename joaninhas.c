@@ -6,8 +6,7 @@ enum tipos {
 	NADA,
 	JOANINHA,
 	CALOR,
-	FRIO,
-	BORDA
+	FRIO
 };
 
 typedef enum tipos hex_tipos;
