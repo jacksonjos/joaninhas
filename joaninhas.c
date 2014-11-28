@@ -33,7 +33,7 @@ struct hex **hexes;
 double melhor_vizinho_i, melhor_vizinho_j;
 
 int main(int argc, char **argv) {
-	int iter, ii, jj;
+	int iter, i, j;
 
 	if (argc != 14) {
 		fprintf(stderr, "Usage: %s L A J s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
@@ -77,16 +77,16 @@ int main(int argc, char **argv) {
 	/* a simulação acontece aqui */
 	for (iter = 0; iter < T; iter++) {
 		/* sorteia fontes de calor e frio */
-		for (ii = 0; ii < L; ii++)
-			for (jj = 0; jj < A; jj++)
-				if (hexes[ii][jj].tipo == NADA)
-					sorteia_fonte_calor_ou_frio(&hexes[ii][jj]);
+		for (i = 0; i < L; i++)
+			for (j = 0; j < A; j++)
+				if (hexes[i][j].tipo == NADA)
+					sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 
 		/* joaninhas */
-		for (ii = 0; ii < L; ii++) {
-			for (jj = 0; jj < A; jj++) {
-				if (hexes[ii][jj].tipo == JOANINHA) {
-					calcula_temperatura(&hexes[ii][jj]);
+		for (i = 0; i < L; i++) {
+			for (j = 0; j < A; j++) {
+				if (hexes[i][j].tipo == JOANINHA) {
+					calcula_temperatura(&hexes[i][j]);
 					/* joaninha quer se mover, calcula temperatura dos vizinhos */
 					/* aqui temos que calcular uma pré-movimentação da joaninha */
 				}
@@ -95,11 +95,11 @@ int main(int argc, char **argv) {
 		/* aqui precisamos resolver os conflitos de movimentação */
 
 		/* atualiza fontes de calor e frio */
-		for (ii = 0; ii < L; ii++)
-			for (jj = 0; jj < A; jj++)
-				if (hexes[ii][jj].tipo == CALOR || hexes[ii][jj].tipo == FRIO) {
-					hexes[ii][jj].n--;
-					if (hexes[ii][jj].n == 0) hexes[ii][jj].tipo = NADA;
+		for (i = 0; i < L; i++)
+			for (j = 0; j < A; j++)
+				if (hexes[i][j].tipo == CALOR || hexes[i][j].tipo == FRIO) {
+					hexes[i][j].n--;
+					if (hexes[i][j].n == 0) hexes[i][j].tipo = NADA;
 				}
 
 		imprime();
