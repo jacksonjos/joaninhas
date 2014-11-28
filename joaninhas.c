@@ -185,28 +185,15 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 	par1 = lin1 % 2;
 	par2 = lin2 % 2;
 
-	if (par1 == par2) {
-		return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
+	if (par1 == par2)
+		return sqrt(pow(abs(col1-col2), 2) + 0.75*pow(abs(lin1-lin2), 2));
 		
-	} else {
-		
-		if (par1 == 0) {
-			if (col1 > col2) {
-				return sqrt(pow(abs(col1-col2), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
-			} else {
-				return sqrt(pow(abs(col1-col2+0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
-			}
-		} else {
-			if (par1 == 1) {
-				if (col1 > col2) {
-					return sqrt(pow(abs(col1-col2-0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
-				} else {
-					return sqrt(pow(abs(col1-col2-0.5), 2) + ((1/sqrt(3))*1.5*pow(abs(lin1-lin2), 2)));
-				}
-			}
-		}
-	}
-	return 0;
+	if (par1 == 0)
+		return sqrt(pow(abs(col1-col2+0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
+
+	if (par1 == 1)
+		return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2)));
+
 }		
 
 void calcula_temperatura(struct hex *hex, double C) {
