@@ -1,2 +1,4 @@
 *.swp
 joaninhas
+output_test_*
+gmon.out

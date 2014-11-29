@@ -1,6 +1,19 @@
 #!/bin/bash
 
-make
+if [ "$1" == "" ]; then
+	echo "Usage: $0 test_number [-p]"
+	exit 1
+elif [ "$1" == "clean" ]; then
+	rm output_test_* gmon.out 2> /dev/null
+	make clean
+	exit
+fi
+
+if [ "$2" == "-p" ]; then
+	make gprof
+else
+	make
+fi
 
 #L    largura da matriz
 #A    altura da matriz
@@ -16,5 +29,20 @@ make
 #T    número de ciclos de simulação
 #P    número de processadores (threads) para execução
 
-#           L A  J  s       C   Tmin Tmax pc   nc pf  nf T  P
-./joaninhas 8 10 12 1000000 1.5 6.0  9.0  0.08 2  0.1 2  15 4
+case "$1" in
+"1")
+#                L A  J  s       C   Tmin Tmax pc   nc pf  nf T     P
+time ./joaninhas 8 10 12 1000000 1.5 6.0  9.0  0.08 2  0.1 2  10000 4 > output_test_1
+;;
+
+"2")
+#                L   A   J  s       C      Tmin  Tmax  pc   nc pf  nf T     P
+time ./joaninhas 100 100 20 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_2
+;;
+
+"3")
+#                L   A   J   s       C      Tmin  Tmax  pc   nc pf  nf T     P
+time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_2
+;;
+
+esac

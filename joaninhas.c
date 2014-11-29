@@ -60,15 +60,20 @@ int main(int argc, char **argv) {
 
 	omp_set_num_threads(P);
 	init();
-	imprime();
+	/*imprime();*/
 
 	/* A simulação acontece aqui. */
 	for (iter = 0; iter < T; iter++) {
 		/* Sorteia fontes de calor e frio. */
 		for (i = 0; i < L; i++)
-			for (j = 0; j < A; j++)
+			for (j = 0; j < A; j++) {
+				if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
+					hexes[i][j].n--;
+					if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
+				}
 				if (hexes[i][j].id == NADA)
 					sorteia_fonte_calor_ou_frio(&hexes[i][j]);
+			}
 
 		/* Joaninhas. */
 		for (i = 0; i < L; i++) {
@@ -149,6 +154,7 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
+		/*imprime()*/
 		/* As movimentações são feitas aqui. */
 		for (i = 0; i < J; i++) {
 			if (movimentacao[i].movimenta) {
@@ -180,15 +186,14 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-
-		/* Atualiza fontes de calor e frio. */
-		for (i = 0; i < L; i++)
-			for (j = 0; j < A; j++)
-				if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
-					hexes[i][j].n--;
-					if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
-				}
 	}
+	/* Atualiza fontes de calor e frio. */
+	for (i = 0; i < L; i++)
+		for (j = 0; j < A; j++)
+			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
+				hexes[i][j].n--;
+				if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
+			}
 	imprime();
 
 	return 0;
@@ -222,10 +227,10 @@ void imprime() {
 
 	for (i = 0; i < L; i++) {
 		for (j = 0; j < A; j++) {
-			if (hexes[i][j].id == NADA) printf("|           ");
-			else if (hexes[i][j].id == CALOR) printf("|     +     ");
-			else if (hexes[i][j].id == FRIO) printf("|     -     ");
-			else printf("| %6.2lf %2d ", hexes[i][j].temperatura, hexes[i][j].id);
+			if (hexes[i][j].id == NADA) printf("|            ");
+			else if (hexes[i][j].id == CALOR) printf("|      +     ");
+			else if (hexes[i][j].id == FRIO) printf("|      -     ");
+			else printf("| %7.2lf %2d ", hexes[i][j].temperatura, hexes[i][j].id);
 		}
 		printf("|\n");
 	}
@@ -257,14 +262,20 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 
 void calcula_temperatura(int i, int j) {
 	int ii, jj;
-	double temperatura;
+	double temperatura, d;
 
 	temperatura = 0;
 	for (ii = 0; ii < L; ii++) {
 		for (jj = 0; jj < A; jj++) {
 			if (i == ii && j == jj) continue;
-			if (hexes[ii][jj].id > 0 || hexes[ii][jj].id == CALOR) temperatura += C/(distancia(i, j, ii, jj)*distancia(i, j, ii, jj));
-			else if (hexes[ii][jj].id == FRIO) temperatura -= C/(distancia(i, j, ii, jj)*distancia(i, j, ii, jj));
+			if (hexes[ii][jj].id > 0 || hexes[ii][jj].id == CALOR) {
+				d = distancia(i, j, ii, jj);
+				temperatura += C/(d*d);
+			}
+			else if (hexes[ii][jj].id == FRIO) {
+				d = distancia(i, j, ii, jj);
+				temperatura -= C/(d*d);
+			}
 		}
 	}
 	hexes[i][j].temperatura = temperatura;
