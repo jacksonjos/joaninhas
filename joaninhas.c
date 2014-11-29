@@ -24,7 +24,7 @@ void init();
 void imprime();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
-void calcula_temperatura(struct hex *hex);
+void calcula_temperatura(int i, int j);
 void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j);
 void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j);
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 		for (i = 0; i < L; i++) {
 			for (j = 0; j < A; j++) {
 				if (hexes[i][j].id >= 0) {
-					calcula_temperatura(&hexes[i][j]);
+					calcula_temperatura(i, j);
 					/* Joaninha quer se mover, calcula temperatura dos vizinhos. */
 					iv = i; jv = j; /* Por enquanto a joaninha permanece onde está. */
 					if (hexes[i][j].temperatura < Tmin) {
@@ -240,12 +240,12 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 	/* par1 == 1 */ return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
 }
 
-void calcula_temperatura(struct hex *hex) {
+void calcula_temperatura(int i, int j) {
 }
 
 void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
 	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].id == NADA) {
-		calcula_temperatura(&hexes[i][j]);
+		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
@@ -255,7 +255,7 @@ void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
 
 void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j) {
 	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].id == NADA) {
-		calcula_temperatura(&hexes[i][j]);
+		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
