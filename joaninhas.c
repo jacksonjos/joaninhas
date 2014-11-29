@@ -25,12 +25,14 @@ void imprime();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
 void calcula_temperatura(struct hex *hex);
+void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j);
+void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j);
 
 int L, A, J, nc, nf, T, P;
 unsigned int s;
 double C, Tmin, Tmax, pc, pf;
 struct hex **hexes;
-double melhor_vizinho_i, melhor_vizinho_j;
+int iv, jv; /* guarda a posição da melhor casa vizinha para a joaninha se mover */
 
 int main(int argc, char **argv) {
 	int iter, i, j;
@@ -40,37 +42,22 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	else {
-		/*
-		L    largura da matriz
-		A    altura da matriz
-		J    número de joaninhas
-		s    semente para o gerador aleatório
-		C    constante de emissão de calor da joaninha
-		Tmin menor temperatura que a joaninha considera confortável
-		Tmax maior temperatura que a joaninha considera confortável
-		pc   probabilidade, por hexágono, de aparecer uma fonte de calor
-		nc   duração em ciclos da fonte de calor
-		pf   probabilidade, por hexágono, de aparecer uma fonte de frio
-		nf   duração em ciclos da fonte de frio
-		T    número de ciclos de simulação
-		P    número de processadores (threads) para execução
-		*/
-		L = atoi(argv[1]);
-		A = atoi(argv[2]);
-		J = atoi(argv[3]);
-		s = atoi(argv[4]);
-		C = atof(argv[5]);
-		Tmin = atof(argv[6]);
-		Tmax = atof(argv[7]);
-		pc = atof(argv[8]);
-		nc = atoi(argv[9]);
-		pf = atof(argv[10]);
-		nf = atoi(argv[11]);
-		T = atoi(argv[12]);
-		P = atoi(argv[13]);
+		L    = atoi(argv[1]);  /* largura da matriz */
+		A    = atoi(argv[2]);  /* altura da matriz */
+		J    = atoi(argv[3]);  /* número de joaninhas */
+		s    = atoi(argv[4]);  /* semente para o gerador aleatório */
+		C    = atof(argv[5]);  /* constante de emissão de calor da joaninha */
+		Tmin = atof(argv[6]);  /* menor temperatura que a joaninha considera confortável */
+		Tmax = atof(argv[7]);  /* maior temperatura que a joaninha considera confortável */
+		pc   = atof(argv[8]);  /* probabilidade, por hexágono, de aparecer uma fonte de calor */
+		nc   = atoi(argv[9]);  /* duração em ciclos da fonte de calor */
+		pf   = atof(argv[10]); /* probabilidade, por hexágono, de aparecer uma fonte de frio */
+		nf   = atoi(argv[11]); /* duração em ciclos da fonte de frio */
+		T    = atoi(argv[12]); /* número de ciclos de simulação */
+		P    = atoi(argv[13]); /* número de processadores (threads) para execução */
 	}
-	omp_set_num_threads(P);
 
+	omp_set_num_threads(P);
 	init();
 	imprime();
 
@@ -88,7 +75,40 @@ int main(int argc, char **argv) {
 				if (hexes[i][j].tipo == JOANINHA) {
 					calcula_temperatura(&hexes[i][j]);
 					/* joaninha quer se mover, calcula temperatura dos vizinhos */
-					/* aqui temos que calcular uma pré-movimentação da joaninha */
+					iv = i; jv = j; /* por enquanto a joaninha permanece onde está */
+					if (hexes[i][j].temperatura < Tmin) {
+						if (i % 2 == 0) { /* linha par */
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j+1);
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j+1);
+						}
+						else { /* linhas impar */
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j-1);
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
+							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j-1);
+						}
+						/* ambas linhas */
+						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j);
+						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j+1);
+						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j-1);
+					}
+					else if (hexes[i][j].temperatura > Tmax) {
+						if (i % 2 == 0) { /* linha par */
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j+1);
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j+1);
+						}
+						else { /* linhas impar */
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j-1);
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
+							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j-1);
+						}
+						/* ambas linhas */
+						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j);
+						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j+1);
+						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j-1);
+					}
+					/* temos o melhor candidato em iv, jv; agora temos que calcular uma pré-movimentação da joaninha */
 				}
 			}
 		}
@@ -110,16 +130,16 @@ int main(int argc, char **argv) {
 
 void init() {
 	int i, j, ii, jj;
-    
+
     hexes = malloc(L*sizeof(struct hex *));
     for (i = 0; i < L; i++) {
-	    hexes[i] = malloc(A*sizeof(struct hex));
+		hexes[i] = malloc(A*sizeof(struct hex));
         for (j = 0; j < A; j++) {
             hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
         }
     }
-    srand(s);
 
+    srand(s);
 	for (i = 0; i < J; i++) {
 		ii = rand() % L;
 		jj = rand() % A;
@@ -164,4 +184,24 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 }
 
 void calcula_temperatura(struct hex *hex) {
+}
+
+void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
+	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].tipo == NADA) {
+		calcula_temperatura(&hexes[i][j]);
+		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
+			iv = i;
+			jv = j;
+		}
+	}
+}
+
+void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j) {
+	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].tipo == NADA) {
+		calcula_temperatura(&hexes[i][j]);
+		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
+			iv = i;
+			jv = j;
+		}
+	}
 }
