@@ -28,7 +28,7 @@ void init();
 void imprime();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
-void calcula_temperatura(int i, int j);
+void calcula_temperatura(int x, int y);
 void inspeciona_vizinho_quando_esta_frio(int i, int j);
 void inspeciona_vizinho_quando_esta_quente(int i, int j);
 
@@ -281,25 +281,27 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 	/* par1 == 1 */ return sqrt(pow(abs(col1-col2-0.5), 2) + 0.75*pow(abs(lin1-lin2), 2));
 }
 
-void calcula_temperatura(int i, int j) {
-	int ii, jj;
+void calcula_temperatura(int x, int y) {
+	int i, c = C;
 	double temperatura, d;
 
 	temperatura = 0;
-	for (ii = 0; ii < L; ii++) {
-		for (jj = 0; jj < A; jj++) {
-			if (i == ii && j == jj) continue;
-			if (hexes[ii][jj].id > 0 || hexes[ii][jj].id == CALOR) {
-				d = distancia(i, j, ii, jj);
-				temperatura += C/(d*d);
-			}
-			else if (hexes[ii][jj].id == FRIO) {
-				d = distancia(i, j, ii, jj);
-				temperatura -= C/(d*d);
-			}
+	
+	for (i = 0; i < topo; i++) {
+		if (fontes[i].x == x && fontes[i].y == y)
+			continue;
+		switch (fontes[i].tipo) {
+			case FRIO:
+				c = -c;
+				
+			default:
+			case CALOR:
+				d = distancia(x, y, fontes[i].x, fontes[i].y);
+				temperatura += c/(d*d);
+				break;
 		}
 	}
-	hexes[i][j].temperatura = temperatura;
+	hexes[x][y].temperatura = temperatura;
 }
 
 void inspeciona_vizinho_quando_esta_frio(int i, int j) {
