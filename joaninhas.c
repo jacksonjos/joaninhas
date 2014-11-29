@@ -25,8 +25,8 @@ void imprime();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
 void calcula_temperatura(int i, int j);
-void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j);
-void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j);
+void inspeciona_vizinho_quando_esta_frio(int i, int j);
+void inspeciona_vizinho_quando_esta_quente(int i, int j);
 
 int L, A, J, nc, nf, T, P;
 unsigned int s;
@@ -79,19 +79,27 @@ int main(int argc, char **argv) {
 					iv = i; jv = j; /* Por enquanto a joaninha permanece onde está. */
 					if (hexes[i][j].temperatura < Tmin) {
 						if (i % 2 == 0) { /* Linha par. */
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j+1);
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j+1);
+							if ((i-1 >= 0) && (j+1 < L))
+								inspeciona_vizinho_quando_esta_frio(i-1, j+1);
+							if ((i+1 < A) && (j+i < L))
+								inspeciona_vizinho_quando_esta_frio(i+1, j+1);
 						}
 						else { /* Linha ímpar. */
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j-1);
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
-							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j-1);
+							if ((i-1 >= 0) && (j-1 >= 0))
+								inspeciona_vizinho_quando_esta_frio(i-1, j-1);
+							if ((i+1 < A) && (j+i < L))
+								inspeciona_vizinho_quando_esta_frio(i+1, j-1);
 						}
 						/* Linha tanto par quanto ímpar. */
-						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j);
-						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j+1);
-						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j-1);
+
+						if (i+1 < A)
+							inspeciona_vizinho_quando_esta_frio(i+1, j);
+						if (i-1 >= 0)
+							inspeciona_vizinho_quando_esta_frio(i-1, j);
+						if (j+1 < L)
+							inspeciona_vizinho_quando_esta_frio(i, j+1);
+						if (j-1 >= 0)
+							inspeciona_vizinho_quando_esta_frio(i, j-1);
 
 						/* Atualiza movimentacao. */
 						movimentacao[hexes[i][j].id].movimenta = 1;
@@ -104,19 +112,27 @@ int main(int argc, char **argv) {
 					}
 					else if (hexes[i][j].temperatura > Tmax) {
 						if (i % 2 == 0) { /* Linha par. */
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j+1);
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j+1);
+							if ((i-1 >= 0) && (j+1 < L))
+								inspeciona_vizinho_quando_esta_quente(i-1, j+1);
+							if ((i+1 < A) && (j+i < L))
+								inspeciona_vizinho_quando_esta_quente(i+1, j+1);
 						}
 						else { /* Linha ímpar. */
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j-1);
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
-							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j-1);
+							if ((i-1 >= 0) && (j-1 >= 0))
+								inspeciona_vizinho_quando_esta_quente(i-1, j-1);
+							if ((i+1 < A) && (j+i < L))
+								inspeciona_vizinho_quando_esta_quente(i+1, j-1);
 						}
 						/* Linha tanto par quanto ímpar. */
-						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j);
-						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j+1);
-						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j-1);
+
+						if (i+1 < A)
+							inspeciona_vizinho_quando_esta_quente(i+1, j);
+						if (i-1 >= 0)
+							inspeciona_vizinho_quando_esta_quente(i-1, j);
+						if (j+1 < L)
+							inspeciona_vizinho_quando_esta_quente(i, j+1);
+						if (j-1 >= 0)
+							inspeciona_vizinho_quando_esta_quente(i, j-1);
 
 						/* Atualiza movimentacao. */
 						movimentacao[hexes[i][j].id].movimenta = 1;
@@ -254,8 +270,8 @@ void calcula_temperatura(int i, int j) {
 	hexes[i][j].temperatura = temperatura;
 }
 
-void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
-	if (i >= 0 && i < L && j >= 0 && j < A && hexes[i][j].id == NADA) {
+void inspeciona_vizinho_quando_esta_frio(int i, int j) {
+	if (hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
 			iv = i;
@@ -264,8 +280,8 @@ void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
 	}
 }
 
-void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j) {
-	if (i >= 0 && i < L && j >= 0 && j < A && hexes[i][j].id == NADA) {
+void inspeciona_vizinho_quando_esta_quente(int i, int j) {
+	if ( hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
 			iv = i;
