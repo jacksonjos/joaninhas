@@ -8,4 +8,4 @@ gprof: joaninhas.c
 	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -pg
 
 clean:
-	@rm -rf joaninhas
+	@rm -rf joaninhas *~
