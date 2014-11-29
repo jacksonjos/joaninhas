@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
 			for (j = 0; j < A; j++)
 				if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 					hexes[i][j].n--;
-					if (hexes[i][j].n == 0) hexes[i][j].id = NADA;
+					if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
 				}
 
 		imprime();
