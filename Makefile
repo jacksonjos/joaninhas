@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-Wall -std=c11 -pedantic -O3 -fopenmp -lm
+CFLAGS=-Wall -std=c11 -pedantic -O3 -fopenmp
 
 main: joaninhas.c
-	$(CC) $(CFLAGS) joaninhas.c -o joaninhas
+	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -lm
 
 gprof: joaninhas.c
 	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -pg

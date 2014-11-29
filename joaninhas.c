@@ -19,6 +19,10 @@ struct movimentacao {
 	double delta;
 };
 
+struct fonte {
+	int x, y, tipo;
+};
+
 extern int rand_r (unsigned int *__seed) __THROW; /* Senão o compilador reclama que não está declarada. */
 void init();
 void imprime();
@@ -33,7 +37,9 @@ unsigned int s;
 double C, Tmin, Tmax, pc, pf;
 struct hex **hexes;
 struct movimentacao *movimentacao;
+struct fonte *fontes; /* Guarda as posições das joaninhas, fontes de calor e frio */
 int iv, jv; /* Guarda a posição do melhor hexágono vizinho para a joaninha se mover. */
+int topo; /* Guarda o tamanho atual do vetor das fontes de temperatura */
 
 int main(int argc, char **argv) {
 	int iter, i, j, quem_movimenta, empate;
@@ -64,15 +70,27 @@ int main(int argc, char **argv) {
 
 	/* A simulação acontece aqui. */
 	for (iter = 0; iter < T; iter++) {
+		topo = 0;
 		/* Sorteia fontes de calor e frio. */
 		for (i = 0; i < L; i++)
 			for (j = 0; j < A; j++) {
-				if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
-					hexes[i][j].n--;
-					if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
+				switch(hexes[i][j].id) {
+					case NADA:
+						sorteia_fonte_calor_ou_frio(&hexes[i][j]);
+						break;
+					
+					case CALOR:
+					case FRIO:
+						hexes[i][j].n--;
+						if (hexes[i][j].n == -1)
+							hexes[i][j].id = NADA;
+
+					default:
+						fontes[topo].x = i;
+						fontes[topo].y = j;
+						fontes[topo++].tipo = hexes[i][j].id;
+						break;
 				}
-				if (hexes[i][j].id == NADA)
-					sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 			}
 
 		/* Joaninhas. */
@@ -202,13 +220,16 @@ int main(int argc, char **argv) {
 void init() {
 	int i, j, ii, jj;
 
-	movimentacao = malloc(J*sizeof(struct movimentacao));
-
 	hexes = malloc(L*sizeof(struct hex *));
+	movimentacao = malloc(J*sizeof(struct movimentacao));
+	fontes = malloc((L*A) * sizeof(struct fonte));
+
 	for (i = 0; i < L; i++) {
 		hexes[i] = malloc(A*sizeof(struct hex));
 		for (j = 0; j < A; j++) {
 			hexes[i][j].id = NADA;
+			hexes[i][j].n = 0;
+			hexes[i][j].temperatura = 0.0;			
 			hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
 		}
 	}
