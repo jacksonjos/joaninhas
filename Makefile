@@ -5,7 +5,7 @@ main: joaninhas.c
 	$(CC) $(CFLAGS) joaninhas.c -o joaninhas
 
 gprof: joaninhas.c
-	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -g -pg
+	$(CC) $(CFLAGS) joaninhas.c -o joaninhas -pg
 
 clean:
 	@rm -rf joaninhas

@@ -29,6 +29,7 @@ fi
 #T    número de ciclos de simulação
 #P    número de processadores (threads) para execução
 
+echo -e "\e[1;31mTime:\e[0m"
 case "$1" in
 "1")
 #                L A  J  s       C   Tmin Tmax pc   nc pf  nf T     P
@@ -46,3 +47,8 @@ time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 >
 ;;
 
 esac
+
+if [ "$2" == "-p" ]; then
+	echo -e "\n\n\n\e[1;31mProfiling:\e[0m"
+	gprof -bp joaninhas
+fi
