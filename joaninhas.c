@@ -172,9 +172,8 @@ int main(int argc, char **argv) {
 					hexes[i][j].n--;
 					if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
 				}
-
-		imprime();
 	}
+	imprime();
 
 	return 0;
 }
@@ -207,10 +206,10 @@ void imprime() {
 
 	for (i = 0; i < L; i++) {
 		for (j = 0; j < A; j++) {
-			if (hexes[i][j].id == NADA) printf("|     ");
-			else if (hexes[i][j].id == CALOR) printf("|   + ");
-			else if (hexes[i][j].id == FRIO) printf("|   - ");
-			else printf("| %3d ", hexes[i][j].id);
+			if (hexes[i][j].id == NADA) printf("|           ");
+			else if (hexes[i][j].id == CALOR) printf("|     +     ");
+			else if (hexes[i][j].id == FRIO) printf("|     -     ");
+			else printf("| %6.2lf %2d ", hexes[i][j].temperatura, hexes[i][j].id);
 		}
 		printf("|\n");
 	}
@@ -241,10 +240,22 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 }
 
 void calcula_temperatura(int i, int j) {
+	int ii, jj;
+	double temperatura;
+
+	temperatura = 0;
+	for (ii = 0; ii < L; ii++) {
+		for (jj = 0; jj < A; jj++) {
+			if (i == ii && j == jj) continue;
+			if (hexes[ii][jj].id > 0 || hexes[ii][jj].id == CALOR) temperatura += C/(distancia(i, j, ii, jj)*distancia(i, j, ii, jj));
+			else if (hexes[ii][jj].id == FRIO) temperatura -= C/(distancia(i, j, ii, jj)*distancia(i, j, ii, jj));
+		}
+	}
+	hexes[i][j].temperatura = temperatura;
 }
 
 void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
-	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].id == NADA) {
+	if (i >= 0 && i < L && j >= 0 && j < A && hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
 			iv = i;
@@ -254,7 +265,7 @@ void calcula_temperatura_vizinho_min_e_atualiza_iv_jv(int i, int j) {
 }
 
 void calcula_temperatura_vizinho_max_e_atualiza_iv_jv(int i, int j) {
-	if (i >= 0 && i <= L && j >= 0 && j <= A && hexes[i][j].id == NADA) {
+	if (i >= 0 && i < L && j >= 0 && j < A && hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
 			iv = i;
