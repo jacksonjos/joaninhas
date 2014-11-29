@@ -11,7 +11,7 @@ struct hex {
 	int id;
 	unsigned int semente;
 	double temperatura;
-	int n; /* duração de ciclos das fontes de calor e frio */
+	int n; /* Duração de ciclos das fontes de calor e frio. */
 };
 
 struct movimentacao {
@@ -19,7 +19,7 @@ struct movimentacao {
 	double delta;
 };
 
-extern int rand_r (unsigned int *__seed) __THROW; /* senão o compilador idiota reclama que não está declarada ¬¬' */
+extern int rand_r (unsigned int *__seed) __THROW; /* Senão o compilador reclama que não está declarada. */
 void init();
 void imprime();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
@@ -33,7 +33,7 @@ unsigned int s;
 double C, Tmin, Tmax, pc, pf;
 struct hex **hexes;
 struct movimentacao *movimentacao;
-int iv, jv; /* guarda a posição da melhor casa vizinha para a joaninha se mover */
+int iv, jv; /* Guarda a posição do melhor hexágono vizinho para a joaninha se mover. */
 
 int main(int argc, char **argv) {
 	int iter, i, j, quem_movimenta, empate;
@@ -43,57 +43,57 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	else {
-		L    = atoi(argv[1]);  /* largura da matriz */
-		A    = atoi(argv[2]);  /* altura da matriz */
-		J    = atoi(argv[3]);  /* número de joaninhas */
-		s    = atoi(argv[4]);  /* semente para o gerador aleatório */
-		C    = atof(argv[5]);  /* constante de emissão de calor da joaninha */
-		Tmin = atof(argv[6]);  /* menor temperatura que a joaninha considera confortável */
-		Tmax = atof(argv[7]);  /* maior temperatura que a joaninha considera confortável */
-		pc   = atof(argv[8]);  /* probabilidade, por hexágono, de aparecer uma fonte de calor */
-		nc   = atoi(argv[9]);  /* duração em ciclos da fonte de calor */
-		pf   = atof(argv[10]); /* probabilidade, por hexágono, de aparecer uma fonte de frio */
-		nf   = atoi(argv[11]); /* duração em ciclos da fonte de frio */
-		T    = atoi(argv[12]); /* número de ciclos de simulação */
-		P    = atoi(argv[13]); /* número de processadores (threads) para execução */
+		L    = atoi(argv[1]);  /* Largura da matriz. */
+		A    = atoi(argv[2]);  /* Altura da matriz. */
+		J    = atoi(argv[3]);  /* Número de joaninhas. */
+		s    = atoi(argv[4]);  /* Semente para o gerador aleatório. */
+		C    = atof(argv[5]);  /* Constante de emissão de calor da joaninha. */
+		Tmin = atof(argv[6]);  /* Menor temperatura que a joaninha considera confortável. */
+		Tmax = atof(argv[7]);  /* Maior temperatura que a joaninha considera confortável. */
+		pc   = atof(argv[8]);  /* Probabilidade, por hexágono, de aparecer uma fonte de calor. */
+		nc   = atoi(argv[9]);  /* Duração em ciclos da fonte de calor. */
+		pf   = atof(argv[10]); /* Probabilidade, por hexágono, de aparecer uma fonte de frio. */
+		nf   = atoi(argv[11]); /* Duração em ciclos da fonte de frio. */
+		T    = atoi(argv[12]); /* Número de ciclos de simulação. */
+		P    = atoi(argv[13]); /* Número de processadores (threads) para execução. */
 	}
 
 	omp_set_num_threads(P);
 	init();
 	imprime();
 
-	/* a simulação acontece aqui */
+	/* A simulação acontece aqui. */
 	for (iter = 0; iter < T; iter++) {
-		/* sorteia fontes de calor e frio */
+		/* Sorteia fontes de calor e frio. */
 		for (i = 0; i < L; i++)
 			for (j = 0; j < A; j++)
 				if (hexes[i][j].id == NADA)
 					sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 
-		/* joaninhas */
+		/* Joaninhas. */
 		for (i = 0; i < L; i++) {
 			for (j = 0; j < A; j++) {
 				if (hexes[i][j].id >= 0) {
 					calcula_temperatura(&hexes[i][j]);
-					/* joaninha quer se mover, calcula temperatura dos vizinhos */
-					iv = i; jv = j; /* por enquanto a joaninha permanece onde está */
+					/* Joaninha quer se mover, calcula temperatura dos vizinhos. */
+					iv = i; jv = j; /* Por enquanto a joaninha permanece onde está. */
 					if (hexes[i][j].temperatura < Tmin) {
-						if (i % 2 == 0) { /* linha par */
+						if (i % 2 == 0) { /* Linha par. */
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j+1);
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j+1);
 						}
-						else { /* linhas impar */
+						else { /* Linha ímpar. */
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j-1);
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i-1, j);
 							calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j-1);
 						}
-						/* ambas linhas */
+						/* Linha tanto par quanto ímpar. */
 						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i+1, j);
 						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j+1);
 						calcula_temperatura_vizinho_min_e_atualiza_iv_jv(i, j-1);
 
-						/* atualiza movimentacao */
+						/* Atualiza movimentacao. */
 						movimentacao[hexes[i][j].id].movimenta = 1;
 						movimentacao[hexes[i][j].id].i_atual = i;
 						movimentacao[hexes[i][j].id].j_atual = j;
@@ -103,22 +103,22 @@ int main(int argc, char **argv) {
 						if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
 					}
 					else if (hexes[i][j].temperatura > Tmax) {
-						if (i % 2 == 0) { /* linha par */
+						if (i % 2 == 0) { /* Linha par. */
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j+1);
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j+1);
 						}
-						else { /* linhas impar */
+						else { /* Linha ímpar. */
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j-1);
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i-1, j);
 							calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j-1);
 						}
-						/* ambas linhas */
+						/* Linha tanto par quanto ímpar. */
 						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i+1, j);
 						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j+1);
 						calcula_temperatura_vizinho_max_e_atualiza_iv_jv(i, j-1);
 
-						/* atualiza movimentacao */
+						/* Atualiza movimentacao. */
 						movimentacao[hexes[i][j].id].movimenta = 1;
 						movimentacao[hexes[i][j].id].i_atual = i;
 						movimentacao[hexes[i][j].id].j_atual = j;
@@ -128,19 +128,18 @@ int main(int argc, char **argv) {
 						if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
 					}
 					else {
-						movimentacao[hexes[i][j].id].movimenta = 0; /* joaninha não se movimenta */
+						movimentacao[hexes[i][j].id].movimenta = 0; /* Joaninha não se movimenta. */
 					}
-					/* temos o melhor candidato em iv, jv; agora temos que calcular uma pré-movimentação da joaninha */
 				}
 			}
 		}
-		/* as movimentações são feitas aqui */
+		/* As movimentações são feitas aqui. */
 		for (i = 0; i < J; i++) {
 			if (movimentacao[i].movimenta) {
 				empate = 0;
 				quem_movimenta = i;
 				for (j = i; j < J; j++) {
-					if (movimentacao[i].i_novo == movimentacao[j].i_novo && movimentacao[i].j_novo == movimentacao[j].j_novo) { /* conflito */
+					if (movimentacao[i].i_novo == movimentacao[j].i_novo && movimentacao[i].j_novo == movimentacao[j].j_novo) { /* Conflito. */
 						if (movimentacao[i].delta == movimentacao[j].delta) {
 							empate = 1;
 							movimentacao[j].movimenta = 0;
@@ -154,10 +153,10 @@ int main(int argc, char **argv) {
 					}
 				}
 				if (empate) {
-					movimentacao[quem_movimenta].movimenta = 0; /* se há empate ninguém se movimenta */
+					movimentacao[quem_movimenta].movimenta = 0; /* Se há empate ninguém se movimenta. */
 				}
 				else {
-					/* faz a movimentação */
+					/* Faz a movimentação. */
 					hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].id = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id;
 					hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].temperatura = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].temperatura;
 					hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id = NADA;
@@ -165,9 +164,8 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-		/* aqui precisamos resolver os conflitos de movimentação */
 
-		/* atualiza fontes de calor e frio */
+		/* Atualiza fontes de calor e frio. */
 		for (i = 0; i < L; i++)
 			for (j = 0; j < A; j++)
 				if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
@@ -199,7 +197,7 @@ void init() {
 	for (i = 0; i < J; i++) {
 		ii = rand() % L;
 		jj = rand() % A;
-		if (hexes[ii][jj].id >= 0) i--; /* executa mesma iteração outra vez */
+		if (hexes[ii][jj].id >= 0) i--; /* Executa a mesma iteração outra vez. */
 		else hexes[ii][jj].id = i;
 	}
 }
@@ -220,7 +218,7 @@ void imprime() {
 }
 
 void sorteia_fonte_calor_ou_frio(struct hex *hex) {
-	/* fonte de calor deve ser sorteada primeiro */
+	/* Fonte de calor deve ser sorteada primeiro. */
 	if ((double) rand_r(&hex->semente)/RAND_MAX <= pc) {
 		hex->id = CALOR;
 		hex->n = nc;
