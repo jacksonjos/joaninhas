@@ -33,7 +33,7 @@ echo -e "\e[1;31mTime:\e[0m"
 case "$1" in
 "1")
 #                L A  J  s       C   Tmin Tmax pc   nc pf  nf T     P
-time ./joaninhas 8 10 12 1000000 1.5 6.0  9.0  0.08 2  0.1 2  10000 4 > output_test_1
+time ./joaninhas 8 10 10 1000000 1.5 6.0  9.0  0.08 2  0.1 2  10000 4 > output_test_1
 ;;
 
 "2")

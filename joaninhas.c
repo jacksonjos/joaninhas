@@ -282,14 +282,17 @@ void etapa_joaninhas_simulacao() {
 				if (j-1 >= 0)
 					inspeciona_vizinho_quando_esta_frio(i, j-1);
 
-				/* Atualiza movimentacao. */
-				movimentacao[hexes[i][j].id].movimenta = 1;
-				movimentacao[hexes[i][j].id].i_atual = i;
-				movimentacao[hexes[i][j].id].j_atual = j;
-				movimentacao[hexes[i][j].id].i_novo = iv;
-				movimentacao[hexes[i][j].id].j_novo = jv;
-				movimentacao[hexes[i][j].id].delta = hexes[i][j].temperatura - hexes[iv][jv].temperatura;
-				if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
+				if (i != iv && j != jv) {
+					/* Atualiza movimentacao. */
+					movimentacao[hexes[i][j].id].movimenta = 1;
+					movimentacao[hexes[i][j].id].i_atual = i;
+					movimentacao[hexes[i][j].id].j_atual = j;
+					movimentacao[hexes[i][j].id].i_novo = iv;
+					movimentacao[hexes[i][j].id].j_novo = jv;
+					movimentacao[hexes[i][j].id].delta = hexes[i][j].temperatura - hexes[iv][jv].temperatura;
+					if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
+				}
+				else movimentacao[hexes[i][j].id].movimenta = 0;
 			}
 			else if (hexes[i][j].temperatura > Tmax) {
 				if (i % 2 == 0) { /* Linha par. */
@@ -315,14 +318,17 @@ void etapa_joaninhas_simulacao() {
 				if (j-1 >= 0)
 					inspeciona_vizinho_quando_esta_quente(i, j-1);
 
-				/* Atualiza movimentacao. */
-				movimentacao[hexes[i][j].id].movimenta = 1;
-				movimentacao[hexes[i][j].id].i_atual = i;
-				movimentacao[hexes[i][j].id].j_atual = j;
-				movimentacao[hexes[i][j].id].i_novo = iv;
-				movimentacao[hexes[i][j].id].j_novo = jv;
-				movimentacao[hexes[i][j].id].delta = hexes[i][j].temperatura - hexes[iv][jv].temperatura;
-				if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
+				if (i != iv && j != jv) {
+					/* Atualiza movimentacao. */
+					movimentacao[hexes[i][j].id].movimenta = 1;
+					movimentacao[hexes[i][j].id].i_atual = i;
+					movimentacao[hexes[i][j].id].j_atual = j;
+					movimentacao[hexes[i][j].id].i_novo = iv;
+					movimentacao[hexes[i][j].id].j_novo = jv;
+					movimentacao[hexes[i][j].id].delta = hexes[i][j].temperatura - hexes[iv][jv].temperatura;
+					if (movimentacao[hexes[i][j].id].delta < 0) movimentacao[hexes[i][j].id].delta *= -1;
+				}
+				else movimentacao[hexes[i][j].id].movimenta = 0;
 			}
 			else {
 				movimentacao[hexes[i][j].id].movimenta = 0; /* Joaninha não se movimenta. */
@@ -332,30 +338,25 @@ void etapa_joaninhas_simulacao() {
 }
 
 void faz_movimentacao() {
-	int empate, quem_movimenta, i, j;
+	int quem_movimenta, i, j;
 
 	for (i = 0; i < J; i++) {
 		if (movimentacao[i].movimenta) {
-			empate = 0;
 			quem_movimenta = i;
 			for (j = i; j < J; j++) {
-				if (movimentacao[i].i_novo == movimentacao[j].i_novo && movimentacao[i].j_novo == movimentacao[j].j_novo) { /* Conflito. */
+				if (movimentacao[j].movimenta && movimentacao[i].i_novo == movimentacao[j].i_novo && movimentacao[i].j_novo == movimentacao[j].j_novo) { /* Conflito. */
 					if (movimentacao[i].delta == movimentacao[j].delta) {
-						empate = 1;
+						movimentacao[i].movimenta = 0;
 						movimentacao[j].movimenta = 0;
 					}
 					else if (movimentacao[i].delta < movimentacao[j].delta) {
-						empate = 0;
 						movimentacao[i].movimenta = 0;
 						quem_movimenta = j;
 					}
 					else movimentacao[j].movimenta = 0;
 				}
 			}
-			if (empate) {
-				movimentacao[quem_movimenta].movimenta = 0; /* Se há empate ninguém se movimenta. */
-			}
-			else {
+			if (movimentacao[quem_movimenta].movimenta) {
 				/* Faz a movimentação. */
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].id = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id;
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].temperatura = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].temperatura;
