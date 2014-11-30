@@ -8,12 +8,8 @@ Leonardo Schäffer     7278142
 
 O projeto consiste em um programa que simula a movimentação de joaninhas em função da temperatura ao seu redor.
 
-Para testá-lo basta rodar o seguinte comando no terminal na pasta joaninhas/:
+Para testá-lo basta rodar o seguinte comando no terminal:
+	./test numero_do_teste [-p]
 
-	bash test # [-p]
-
-Sendo que # deve ser substituído por 1, 2 ou 3.
-Eles representam testes diferentes de dificuldade crescente.
 Cada teste gera um arquivo de saída com um mapeamento das joaninhas e fontes de calor ou frio chamado: output_test_#, sendo que # corresponde ao número do teste realizdo.
-
 O argumento -p após o número do teste escolhido indica que GNU gprof será utilizado, afim de determinar quais partes do programa gastam mais tempo de execução.
