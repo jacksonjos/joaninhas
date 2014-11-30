@@ -185,8 +185,6 @@ void calcula_temperatura(int x, int y) {
 	int i;
 	double temperatura;
 
-	if (hexes[x][y].temperatura_ja_foi_calculada) return;
-
 	temperatura = 0;
 	for (i = 0; i < topo; i++) {
 		if (fontes[i].x == x && fontes[i].y == y) continue;
@@ -207,7 +205,9 @@ void calcula_temperatura(int x, int y) {
 
 void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 	if (hexes[i][j].id == NADA) {
-		calcula_temperatura(i, j);
+		if (!hexes[x][y].temperatura_ja_foi_calculada)
+			calcula_temperatura(i, j);
+
 		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
@@ -217,7 +217,9 @@ void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 
 void inspeciona_vizinho_quando_esta_quente(int i, int j) {
 	if (hexes[i][j].id == NADA) {
-		calcula_temperatura(i, j);
+		if (!hexes[x][y].temperatura_ja_foi_calculada)
+			calcula_temperatura(i, j);
+
 		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
