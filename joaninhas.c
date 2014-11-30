@@ -67,7 +67,9 @@ int main(int argc, char **argv) {
 		P    = atoi(argv[13]); /* Número de processadores (threads) para execução. */
 	}
 
+	#if defined(_OPENMP)
 	omp_set_num_threads(P);
+	#endif
 	init();
 
 	/* A simulação acontece aqui. */
@@ -189,6 +191,8 @@ void calcula_temperatura(int x, int y) {
 	int i;
 	double temperatura;
 
+	if (hexes[x][y].temperatura_ja_foi_calculada) return;
+
 	temperatura = 0;
 	#pragma omp parallel for reduction(+:temperatura)
 	for (i = 0; i < topo; i++) {
@@ -210,9 +214,7 @@ void calcula_temperatura(int x, int y) {
 
 void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 	if (hexes[i][j].id == NADA) {
-		if (!hexes[i][j].temperatura_ja_foi_calculada)
-			calcula_temperatura(i, j);
-
+		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura > hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
@@ -222,9 +224,7 @@ void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 
 void inspeciona_vizinho_quando_esta_quente(int i, int j) {
 	if (hexes[i][j].id == NADA) {
-		if (!hexes[i][j].temperatura_ja_foi_calculada)
-			calcula_temperatura(i, j);
-
+		calcula_temperatura(i, j);
 		if (hexes[i][j].temperatura < hexes[iv][jv].temperatura) {
 			iv = i;
 			jv = j;
@@ -237,9 +237,9 @@ void etapa_inicial_simulacao() {
 
 	topo = 0;
 	/* essas paralelizações deixam o código lento :O */
-	#pragma omp parallel for
+	/*#pragma omp parallel for*/
 	for (i = 0; i < L; i++) {
-		#pragma omp parallel for
+		/*#pragma omp parallel for*/
 		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
@@ -250,12 +250,12 @@ void etapa_inicial_simulacao() {
 				sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 			}
 			if (hexes[i][j].id != NADA) {
-				#pragma omp critical 
-				{
+				/*#pragma omp critical
+				{*/
 				fontes[topo].x = i;
 				fontes[topo].y = j;
 				fontes[topo++].id = hexes[i][j].id;
-				}
+				/*}*/
 			}
 		}
 	}
