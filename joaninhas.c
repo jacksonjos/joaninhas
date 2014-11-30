@@ -89,14 +89,14 @@ int main(int argc, char **argv) {
 void init() {
 	int i, j, ii, jj;
 
-	hexes = malloc(L*sizeof(struct hex *));
+	hexes = malloc(A*sizeof(struct hex *));
 	movimentacao = malloc(J*sizeof(struct movimentacao));
-	fontes = malloc(L*A*sizeof(struct fonte));
+	fontes = malloc(A*L*sizeof(struct fonte));
 
-	#pragma omp parallel for private(i, j) shared(hexes, L, A, s)
-	for (i = 0; i < L; i++) {
-		hexes[i] = malloc(A*sizeof(struct hex));
-		for (j = 0; j < A; j++) {
+	#pragma omp parallel for private(i, j) shared(hexes, A, L, s)
+	for (i = 0; i < A; i++) {
+		hexes[i] = malloc(L*sizeof(struct hex));
+		for (j = 0; j < L; j++) {
 			hexes[i][j].id = NADA;
 			hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
 		}
@@ -104,8 +104,8 @@ void init() {
 
 	srand(s);
 	for (i = 0; i < J; i++) {
-		ii = rand() % L;
-		jj = rand() % A;
+		ii = rand() % A;
+		jj = rand() % L;
 		if (hexes[ii][jj].id >= 0) i--; /* Executa a mesma iteração outra vez. */
 		else hexes[ii][jj].id = i;
 	}
@@ -114,8 +114,8 @@ void init() {
 void imprime_matriz() {
 	int i, j;
 
-	for (i = 0; i < L; i++) {
-		for (j = 0; j < A; j++) {
+	for (i = 0; i < A; i++) {
+		for (j = 0; j < L; j++) {
 			if (hexes[i][j].id == NADA) printf("|            ");
 			else if (hexes[i][j].id == CALOR) printf("|      +     ");
 			else if (hexes[i][j].id == FRIO) printf("|      -     ");
@@ -130,9 +130,9 @@ void imprime_matriz_final() {
 	int i, j;
 
 	/* Atualiza fontes de calor e frio. */
-	#pragma omp parallel for private(i, j) shared(hexes, L, A)
-	for (i = 0; i < L; i++) {
-		for (j = 0; j < A; j++) {
+	#pragma omp parallel for private(i, j) shared(hexes, A, L)
+	for (i = 0; i < A; i++) {
+		for (j = 0; j < L; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
 				if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
@@ -145,8 +145,8 @@ void imprime_matriz_final() {
 void imprime_saida() {
 	int i, j;
 
-	for (i = 0; i < L; i++) {
-		for (j = 0; j < A; j++) {
+	for (i = 0; i < A; i++) {
+		for (j = 0; j < L; j++) {
 			if (hexes[i][j].id >= 0) printf("%d %d %f\n", i, j, hexes[i][j].temperatura);
 		}
 	}
@@ -241,8 +241,8 @@ void etapa_inicial_simulacao() {
 	int i, j;
 
 	topo = 0;
-	for (i = 0; i < L; i++) {
-		for (j = 0; j < A; j++) {
+	for (i = 0; i < A; i++) {
+		for (j = 0; j < L; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
 				if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
@@ -272,17 +272,17 @@ void etapa_joaninhas_simulacao() {
 			iv = i; jv = j; /* Por enquanto a joaninha permanece onde está. */
 			if (hexes[i][j].temperatura < Tmin) {
 				if (i % 2 == 0) { /* Linha par. */
-					if ((i-1 >= 0) && (j+1 < A)) inspeciona_vizinho_quando_esta_frio(i-1, j+1);
-					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_frio(i+1, j+1);
+					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_frio(i-1, j+1);
+					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_frio(i+1, j+1);
 				}
 				else { /* Linha ímpar. */
 					if ((i-1 >= 0) && (j-1 >= 0)) inspeciona_vizinho_quando_esta_frio(i-1, j-1);
-					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_frio(i+1, j-1);
+					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_frio(i+1, j-1);
 				}
 				/* Linha tanto par quanto ímpar. */
-				if (i+1 < L) inspeciona_vizinho_quando_esta_frio(i+1, j);
+				if (i+1 < A) inspeciona_vizinho_quando_esta_frio(i+1, j);
 				if (i-1 >= 0) inspeciona_vizinho_quando_esta_frio(i-1, j);
-				if (j+1 < A) inspeciona_vizinho_quando_esta_frio(i, j+1);
+				if (j+1 < L) inspeciona_vizinho_quando_esta_frio(i, j+1);
 				if (j-1 >= 0) inspeciona_vizinho_quando_esta_frio(i, j-1);
 
 				if (i != iv && j != jv) {
@@ -299,17 +299,17 @@ void etapa_joaninhas_simulacao() {
 			}
 			else if (hexes[i][j].temperatura > Tmax) {
 				if (i % 2 == 0) { /* Linha par. */
-					if ((i-1 >= 0) && (j+1 < A)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
-					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
+					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
+					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
 				}
 				else { /* Linha ímpar. */
 					if ((i-1 >= 0) && (j-1 >= 0)) inspeciona_vizinho_quando_esta_quente(i-1, j-1);
-					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_quente(i+1, j-1);
+					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j-1);
 				}
 				/* Linha tanto par quanto ímpar. */
-				if (i+1 < L) inspeciona_vizinho_quando_esta_quente(i+1, j);
+				if (i+1 < A) inspeciona_vizinho_quando_esta_quente(i+1, j);
 				if (i-1 >= 0) inspeciona_vizinho_quando_esta_quente(i-1, j);
-				if (j+1 < A) inspeciona_vizinho_quando_esta_quente(i, j+1);
+				if (j+1 < L) inspeciona_vizinho_quando_esta_quente(i, j+1);
 				if (j-1 >= 0) inspeciona_vizinho_quando_esta_quente(i, j-1);
 
 				if (i != iv && j != jv) {
