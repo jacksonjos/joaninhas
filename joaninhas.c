@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 		P    = atoi(argv[13]); /* Número de processadores (threads) para execução. */
 	}
 
-	#if defined(_OPENMP)
+	#ifdef _OPENMP
 	omp_set_num_threads(P);
 	#endif
 	init();
@@ -194,7 +194,7 @@ void calcula_temperatura(int x, int y) {
 	if (hexes[x][y].temperatura_ja_foi_calculada) return;
 
 	temperatura = 0;
-	#pragma omp parallel for reduction(+:temperatura)
+	#pragma omp parallel for private(i) shared(fontes, topo, C) reduction(+:temperatura)
 	for (i = 0; i < topo; i++) {
 		if (fontes[i].x == x && fontes[i].y == y) continue;
 		switch (fontes[i].id) {
@@ -235,11 +235,8 @@ void inspeciona_vizinho_quando_esta_quente(int i, int j) {
 void etapa_inicial_simulacao() {
 	int i, j;
 
-	topo = 0;
-	/* essas paralelizações deixam o código lento :O */
-	/*#pragma omp parallel for*/
+	#pragma omp parallel for private(i, j) shared(hexes)
 	for (i = 0; i < L; i++) {
-		/*#pragma omp parallel for*/
 		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
@@ -249,13 +246,17 @@ void etapa_inicial_simulacao() {
 				hexes[i][j].temperatura_ja_foi_calculada = 0;
 				sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 			}
+		}
+	}
+
+	/* Constroi fontes[]. */
+	topo = 0;
+	for (i = 0; i < L; i++) {
+		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id != NADA) {
-				/*#pragma omp critical
-				{*/
 				fontes[topo].x = i;
 				fontes[topo].y = j;
 				fontes[topo++].id = hexes[i][j].id;
-				/*}*/
 			}
 		}
 	}
