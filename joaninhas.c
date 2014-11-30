@@ -78,7 +78,9 @@ int main(int argc, char **argv) {
 	}
 
 	/* Atualiza fontes de calor e frio. */
+	#pragma omp parallel for
 	for (i = 0; i < L; i++) {
+		#pragma omp parallel for
 		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
@@ -99,8 +101,10 @@ void init() {
 	movimentacao = malloc(J*sizeof(struct movimentacao));
 	fontes = malloc(L*A*sizeof(struct fonte));
 
+	#pragma omp parallel for
 	for (i = 0; i < L; i++) {
 		hexes[i] = malloc(A*sizeof(struct hex));
+		#pragma omp parallel for
 		for (j = 0; j < A; j++) {
 			hexes[i][j].id = NADA;
 			hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
@@ -186,6 +190,7 @@ void calcula_temperatura(int x, int y) {
 	double temperatura;
 
 	temperatura = 0;
+	#pragma omp parallel for reduction(+:temperatura)
 	for (i = 0; i < topo; i++) {
 		if (fontes[i].x == x && fontes[i].y == y) continue;
 		switch (fontes[i].id) {
@@ -231,7 +236,10 @@ void etapa_inicial_simulacao() {
 	int i, j;
 
 	topo = 0;
+	/* essas paralelizações deixam o código lento :O */
+	#pragma omp parallel for
 	for (i = 0; i < L; i++) {
+		#pragma omp parallel for
 		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
@@ -242,9 +250,12 @@ void etapa_inicial_simulacao() {
 				sorteia_fonte_calor_ou_frio(&hexes[i][j]);
 			}
 			if (hexes[i][j].id != NADA) {
+				#pragma omp critical 
+				{
 				fontes[topo].x = i;
 				fontes[topo].y = j;
 				fontes[topo++].id = hexes[i][j].id;
+				}
 			}
 		}
 	}
