@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <omp.h>
 
 #define NADA -1
@@ -25,7 +24,8 @@ struct fonte {
 
 extern int rand_r (unsigned int *__seed) __THROW; /* Senão o compilador reclama que não está declarada. */
 void init();
-void imprime();
+void imprime_matriz();
+void imprime_saida();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
 void calcula_temperatura(int x, int y);
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	imprime();
+	imprime_saida();
 
 	return 0;
 }
@@ -116,7 +116,7 @@ void init() {
 	}
 }
 
-void imprime() {
+void imprime_matriz() {
 	int i, j;
 
 	for (i = 0; i < L; i++) {
@@ -129,6 +129,16 @@ void imprime() {
 		printf("|\n");
 	}
 	printf("\n");
+}
+
+void imprime_saida() {
+	int i, j;
+
+	for (i = 0; i < L; i++) {
+		for (j = 0; j < A; j++) {
+			if (hexes[i][j].id >= 0) printf("%d %d %f\n", i, j, hexes[i][j].temperatura);
+		}
+	}
 }
 
 void sorteia_fonte_calor_ou_frio(struct hex *hex) {
@@ -237,7 +247,6 @@ void etapa_inicial_simulacao() {
 		}
 	}
 }
-
 
 void etapa_joaninhas_simulacao() {
 	int i, j, f;

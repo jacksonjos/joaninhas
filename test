@@ -42,8 +42,23 @@ time ./joaninhas 100 100 30 1000000 22.765 18.00 27.00 0.025 2  0.04 4  10000 1 
 ;;
 
 "3")
+#                L   A   J   s       C      Tmin  Tmax  pc    nc pf   nf T     P
+time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.025 2  0.04 4  10000 1 > output_test_3
+;;
+
+"4")
+#                L   A   J  s       C      Tmin  Tmax  pc   nc pf  nf T     P
+time ./joaninhas 100 100 10 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_4
+;;
+
+"5")
 #                L   A   J   s       C      Tmin  Tmax  pc   nc pf  nf T     P
-time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_3
+time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_5
+;;
+
+"6")
+#                L   A   J    s       C      Tmin  Tmax  pc   nc pf  nf T     P
+time ./joaninhas 100 100 1000 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 1 > output_test_6
 ;;
 
 esac
