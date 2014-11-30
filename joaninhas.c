@@ -25,6 +25,7 @@ struct fonte {
 extern int rand_r (unsigned int *__seed) __THROW; /* Senão o compilador reclama que não está declarada. */
 void init();
 void imprime_matriz();
+void imprime_matriz_final();
 void imprime_saida();
 void sorteia_fonte_calor_ou_frio(struct hex *hex);
 double distancia(int lin1, int col1, int lin2, int col2);
@@ -45,10 +46,10 @@ int iv, jv; /* Guarda a posição do melhor hexágono vizinho para a joaninha se
 int topo; /* Guarda o tamanho atual do vetor das fontes de temperatura */
 
 int main(int argc, char **argv) {
-	int iter, i, j;
+	int iter;
 
-	if (argc != 14) {
-		fprintf(stderr, "Usage: %s L A J s C Tmin Tmax pc nc pf nf T P\n", argv[0]);
+	if (argc < 14) {
+		fprintf(stderr, "Usage: %s L A J s C Tmin Tmax pc nc pf nf T P [m]\n", argv[0]);
 		exit(1);
 	}
 	else {
@@ -79,18 +80,7 @@ int main(int argc, char **argv) {
 		faz_movimentacao();
 	}
 
-	/* Atualiza fontes de calor e frio. */
-	#pragma omp parallel for private(i) shared(L)
-	for (i = 0; i < L; i++) {
-		#pragma omp parallel for private(j) shared(i, hexes, A)
-		for (j = 0; j < A; j++) {
-			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
-				hexes[i][j].n--;
-				if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
-			}
-		}
-	}
-
+	if (argc == 15) imprime_matriz_final();
 	imprime_saida();
 
 	return 0;
@@ -135,6 +125,23 @@ void imprime_matriz() {
 		printf("|\n");
 	}
 	printf("\n");
+}
+
+void imprime_matriz_final() {
+	int i, j;
+
+	/* Atualiza fontes de calor e frio. */
+	#pragma omp parallel for private(i) shared(L)
+	for (i = 0; i < L; i++) {
+		#pragma omp parallel for private(j) shared(i, hexes, A)
+		for (j = 0; j < A; j++) {
+			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
+				hexes[i][j].n--;
+				if (hexes[i][j].n == -1) hexes[i][j].id = NADA;
+			}
+		}
+	}
+	imprime_matriz();
 }
 
 void imprime_saida() {

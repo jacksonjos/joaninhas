@@ -8,10 +8,18 @@ Leonardo Schäffer     7278142
 
 O projeto consiste em um programa que simula a movimentação de joaninhas em função da temperatura ao seu redor.
 
-Para testá-lo basta rodar o seguinte comando no terminal:
-	./test numero_do_teste numero_de_threads|p
+Para compilá-lo:
+make
 
-Cada teste gera um arquivo de saída com a posição e temperatura final das joaninhas chamado: outputs/test_$1_$2, sendo que $1 corresponde à numero_do_teste e $2 à numero_de_threads|p.
+Para executá-lo:
+./joaninhas L A J s C Tmin Tmax pc nc pf nf T P [m]
+Se "m" for passado como último parâmetro, então o programa também imprime a matriz final com as joaninhas e suas temperaturas mais as fontes de calor ou frio.
+Senão o programa imprime apenas a posição e temperatura final das joaninhas.
+
+Para testá-lo:
+./test numero_do_teste numero_de_threads|p
+
+Cada teste gera o arquivo de saída outputs/test_$1_$2, sendo que $1 corresponde à numero_do_teste e $2 à numero_de_threads|p.
 O argumento p após o número do teste escolhido indica que GNU gprof será utilizado, afim de determinar quais partes do programa gastam mais tempo de execução. Essa opção executa o programa sequencialmente.
 
 O programa passa a maior parte de tempo na calcula_temperatura(), então o maior ganho em paralelismo está lá.
