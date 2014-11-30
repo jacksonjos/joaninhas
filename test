@@ -71,6 +71,6 @@ time ./joaninhas 100 100 100 1000000 22.765 18.00 27.00 0.1  30 0.1 40 10000 $2 
 esac
 
 if [ "$2" == "p" ]; then
-	echo -e "\n\n\n\e[1;31mProfiling:\e[0m"
+	echo -e "\n\e[1;31mProfiling:\e[0m"
 	gprof -bp joaninhas
 fi
