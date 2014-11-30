@@ -14,10 +14,10 @@ Para testá-lo basta rodar o seguinte comando no terminal:
 Cada teste gera um arquivo de saída com um mapeamento das joaninhas e fontes de calor ou frio chamado: output_test_#, sendo que # corresponde ao número do teste realizdo.
 O argumento p após o número do teste escolhido indica que GNU gprof será utilizado, afim de determinar quais partes do programa gastam mais tempo de execução. Essa opção executa o programa sequencialmente.
 
+O programa passa a maior parte de tempo na calcula_temperatura(), então o maior ganho em paralelismo está lá.
+Paralelizamos o for que calcula as contribuições de temperatura das outras joaninhas e fontes de calor ou frio e fizemos a redução da váriavel temperatura, que soma todas as contribuições.
+
 Algumas estratégias de paralelização foram experimentadas, mas sem sucesso:
 Experimentamos separa a váriavel id da struct hexes em uma matriz apenas de ids para que eventualmente aproveitássemos melhor o cache, porém, a velocidade não se alterou.
 Experimentamos paralelizar o trecho que gera o vetor fontes, mas não obtivemos ganho de velocidade devido à necessidade de proteger a variável topo em uma região crítica.
 Experimentamos paralelizar o for em etapa_joaninhas_simulacao(), mas novamente devido à existência de regiões críticas, não obtivemos ganho de velocidade.
-
-O programa passa a maior parte de tempo na calcula_temperatura(), então o maior ganho em paralelismo está lá.
-Paralelizamos o for que calcula as contribuições de temperatura das outras joaninhas e fontes de calor ou frio e fizemos a redução da váriavel temperatura, que soma todas as contribuições.
