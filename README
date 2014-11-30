@@ -11,7 +11,7 @@ O projeto consiste em um programa que simula a movimentação de joaninhas em fu
 Para testá-lo basta rodar o seguinte comando no terminal:
 	./test numero_do_teste numero_de_threads|p
 
-Cada teste gera um arquivo de saída com um mapeamento das joaninhas e fontes de calor ou frio chamado: output_test_#, sendo que # corresponde ao número do teste realizdo.
+Cada teste gera um arquivo de saída com um mapeamento das joaninhas e fontes de calor ou frio chamado: output_test_$1_$2, sendo que $1 corresponde à numero_do_teste e $2 à numero_de_threads|p.
 O argumento p após o número do teste escolhido indica que GNU gprof será utilizado, afim de determinar quais partes do programa gastam mais tempo de execução. Essa opção executa o programa sequencialmente.
 
 O programa passa a maior parte de tempo na calcula_temperatura(), então o maior ganho em paralelismo está lá.
@@ -21,3 +21,5 @@ Algumas estratégias de paralelização foram experimentadas, mas sem sucesso:
 Experimentamos separa a váriavel id da struct hexes em uma matriz apenas de ids para que eventualmente aproveitássemos melhor o cache, porém, a velocidade não se alterou.
 Experimentamos paralelizar o trecho que gera o vetor fontes, mas não obtivemos ganho de velocidade devido à necessidade de proteger a variável topo em uma região crítica.
 Experimentamos paralelizar o for em etapa_joaninhas_simulacao(), mas novamente devido à existência de regiões críticas, não obtivemos ganho de velocidade.
+
+O speedup observado ao testar em um Core i5-760 com 4 processadores foi de aproximadamente 3, o que dá uma eficiência de 75%.
