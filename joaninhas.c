@@ -272,17 +272,17 @@ void etapa_joaninhas_simulacao() {
 			iv = i; jv = j; /* Por enquanto a joaninha permanece onde está. */
 			if (hexes[i][j].temperatura < Tmin) {
 				if (i % 2 == 0) { /* Linha par. */
-					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_frio(i-1, j+1);
-					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_frio(i+1, j+1);
+					if ((i-1 >= 0) && (j+1 < A)) inspeciona_vizinho_quando_esta_frio(i-1, j+1);
+					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_frio(i+1, j+1);
 				}
 				else { /* Linha ímpar. */
 					if ((i-1 >= 0) && (j-1 >= 0)) inspeciona_vizinho_quando_esta_frio(i-1, j-1);
-					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_frio(i+1, j-1);
+					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_frio(i+1, j-1);
 				}
 				/* Linha tanto par quanto ímpar. */
-				if (i+1 < A) inspeciona_vizinho_quando_esta_frio(i+1, j);
+				if (i+1 < L) inspeciona_vizinho_quando_esta_frio(i+1, j);
 				if (i-1 >= 0) inspeciona_vizinho_quando_esta_frio(i-1, j);
-				if (j+1 < L) inspeciona_vizinho_quando_esta_frio(i, j+1);
+				if (j+1 < A) inspeciona_vizinho_quando_esta_frio(i, j+1);
 				if (j-1 >= 0) inspeciona_vizinho_quando_esta_frio(i, j-1);
 
 				if (i != iv && j != jv) {
@@ -299,17 +299,17 @@ void etapa_joaninhas_simulacao() {
 			}
 			else if (hexes[i][j].temperatura > Tmax) {
 				if (i % 2 == 0) { /* Linha par. */
-					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
-					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
+					if ((i-1 >= 0) && (j+1 < A)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
+					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
 				}
 				else { /* Linha ímpar. */
 					if ((i-1 >= 0) && (j-1 >= 0)) inspeciona_vizinho_quando_esta_quente(i-1, j-1);
-					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j-1);
+					if ((i+1 < L) && (j+i < A)) inspeciona_vizinho_quando_esta_quente(i+1, j-1);
 				}
 				/* Linha tanto par quanto ímpar. */
-				if (i+1 < A) inspeciona_vizinho_quando_esta_quente(i+1, j);
+				if (i+1 < L) inspeciona_vizinho_quando_esta_quente(i+1, j);
 				if (i-1 >= 0) inspeciona_vizinho_quando_esta_quente(i-1, j);
-				if (j+1 < L) inspeciona_vizinho_quando_esta_quente(i, j+1);
+				if (j+1 < A) inspeciona_vizinho_quando_esta_quente(i, j+1);
 				if (j-1 >= 0) inspeciona_vizinho_quando_esta_quente(i, j-1);
 
 				if (i != iv && j != jv) {
