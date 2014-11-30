@@ -93,10 +93,9 @@ void init() {
 	movimentacao = malloc(J*sizeof(struct movimentacao));
 	fontes = malloc(L*A*sizeof(struct fonte));
 
-	#pragma omp parallel for private(i) shared(L)
+	#pragma omp parallel for private(i, j) shared(hexes, L, A, s)
 	for (i = 0; i < L; i++) {
 		hexes[i] = malloc(A*sizeof(struct hex));
-		#pragma omp parallel for private(j) shared(i, hexes, A, s)
 		for (j = 0; j < A; j++) {
 			hexes[i][j].id = NADA;
 			hexes[i][j].semente = ((i + 1)*s + j) % RAND_MAX;
@@ -131,9 +130,8 @@ void imprime_matriz_final() {
 	int i, j;
 
 	/* Atualiza fontes de calor e frio. */
-	#pragma omp parallel for private(i) shared(L)
+	#pragma omp parallel for private(i, j) shared(hexes, L, A)
 	for (i = 0; i < L; i++) {
-		#pragma omp parallel for private(j) shared(i, hexes, A)
 		for (j = 0; j < A; j++) {
 			if (hexes[i][j].id == CALOR || hexes[i][j].id == FRIO) {
 				hexes[i][j].n--;
