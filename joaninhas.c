@@ -322,10 +322,6 @@ void etapa_joaninhas_simulacao() {
 				else movimentacao[hexes[i][j].id].movimenta = 0;
 			}
 			else if (hexes[i][j].temperatura > Tmax) {
-	/*  PODE SER MARCADO UM HEXÁGONO COM TEMP > teta max PARA SUBSTITUIR O HEXÁGONO CUJA TEMPERATURA É < teta min.
-		O MESMO PODE OCORRER NO CASO INVERSO
-					VERIFIQUE!!!!!!!!!!
-	*/
 				if (i % 2 == 0) { /* Linha par. */
 					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
 					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
@@ -381,7 +377,6 @@ void faz_movimentacao() {
 			if (movimentacao[quem_movimenta].movimenta) {
 				/* Faz a movimentação. */
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].id = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id;
-				/* APARENTEMENTE TEM PROBLEMA NA LINHA ABAIXO. ISSO FAZ SENTIDO?????? */
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].temperatura = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].temperatura;
 				hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id = NADA;
 				movimentacao[quem_movimenta].movimenta = 0;
