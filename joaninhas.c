@@ -281,7 +281,10 @@ void etapa_inicial_simulacao() {
 	}
 }
 
-/* */
+/* 	Esta função atualiza a temperatura das fonts de frio e de calor, e calcula os movimentos
+	que as joaninhas gostariam de realizar para fugir de hexágonos cujas temperaturas estão
+	abaixo de teta min e acima de teta max. A função armazena os movimentos desejados no
+	vetor 'movimentacao'. */
 void etapa_joaninhas_simulacao() {
 	int i, j, f;
 
@@ -319,6 +322,10 @@ void etapa_joaninhas_simulacao() {
 				else movimentacao[hexes[i][j].id].movimenta = 0;
 			}
 			else if (hexes[i][j].temperatura > Tmax) {
+	/*  PODE SER MARCADO UM HEXÁGONO COM TEMP > teta max PARA SUBSTITUIR O HEXÁGONO CUJA TEMPERATURA É < teta min.
+		O MESMO PODE OCORRER NO CASO INVERSO
+					VERIFIQUE!!!!!!!!!!
+	*/
 				if (i % 2 == 0) { /* Linha par. */
 					if ((i-1 >= 0) && (j+1 < L)) inspeciona_vizinho_quando_esta_quente(i-1, j+1);
 					if ((i+1 < A) && (j+i < L)) inspeciona_vizinho_quando_esta_quente(i+1, j+1);
@@ -359,7 +366,7 @@ void faz_movimentacao() {
 		if (movimentacao[i].movimenta) {
 			quem_movimenta = i;
 			for (j = i; j < J; j++) {
-				if (movimentacao[j].movimenta && movimentacao[i].i_novo == movimentacao[j].i_novo && movimentacao[i].j_novo == movimentacao[j].j_novo) { /* Conflito. */
+				if (movimentacao[j].movimenta && (movimentacao[i].i_novo == movimentacao[j].i_novo) && (movimentacao[i].j_novo == movimentacao[j].j_novo)) { /* Conflito. */
 					if (movimentacao[i].delta == movimentacao[j].delta) {
 						movimentacao[i].movimenta = 0;
 						movimentacao[j].movimenta = 0;
@@ -374,6 +381,7 @@ void faz_movimentacao() {
 			if (movimentacao[quem_movimenta].movimenta) {
 				/* Faz a movimentação. */
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].id = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id;
+				/* APARENTEMENTE TEM PROBLEMA NA LINHA ABAIXO. ISSO FAZ SENTIDO?????? */
 				hexes[movimentacao[quem_movimenta].i_novo][movimentacao[quem_movimenta].j_novo].temperatura = hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].temperatura;
 				hexes[movimentacao[quem_movimenta].i_atual][movimentacao[quem_movimenta].j_atual].id = NADA;
 				movimentacao[quem_movimenta].movimenta = 0;
@@ -381,3 +389,5 @@ void faz_movimentacao() {
 		}
 	}
 }
+
+
