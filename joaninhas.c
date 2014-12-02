@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+/* 	A função aloca espaço para as estruturas do programa e faz o cálculo
+	das sementes para cada hexágono (posição da matriz). */
 void init() {
 	int i, j, ii, jj;
 
@@ -111,6 +113,8 @@ void init() {
 	}
 }
 
+/* 	A função imprime a matrix de hexágonos em formato retangular na orientação
+	odd-even */
 void imprime_matriz() {
 	int i, j;
 
@@ -142,6 +146,7 @@ void imprime_matriz_final() {
 	imprime_matriz();
 }
 
+/* 	Imprime posições de cada joaninha e a temperatura do hexágono onde ela está */
 void imprime_saida() {
 	int i, j;
 
@@ -152,6 +157,8 @@ void imprime_saida() {
 	}
 }
 
+/* 	A função sorteia o hexágono onde cairá uma fagulha (fonte de calor) ou gelo
+	(fonte de frio). */
 void sorteia_fonte_calor_ou_frio(struct hex *hex) {
 	/* Fonte de calor deve ser sorteada primeiro. */
 	if ((double) rand_r(&hex->semente)/RAND_MAX <= pc) {
@@ -164,6 +171,7 @@ void sorteia_fonte_calor_ou_frio(struct hex *hex) {
 	}
 }
 
+/* 	A função calcula a distância entre dois hexágonos */
 double distancia(int lin1, int col1, int lin2, int col2) {
 	int par1, par2;
 	double v1, v2;
@@ -192,6 +200,7 @@ double distancia(int lin1, int col1, int lin2, int col2) {
 	return v1+0.75*v2;
 }
 
+/* 	A função calcula a tempratura em cada hexágono da matriz */
 void calcula_temperatura(int x, int y) {
 	int i;
 	double temperatura;
@@ -217,6 +226,10 @@ void calcula_temperatura(int x, int y) {
 	hexes[x][y].temperatura_ja_foi_calculada = 1;
 }
 
+/* 	A função recebe a posição de um hexágono, verifica se ele
+	possui uma temperatura superior à do hexágono na posição [iv, jv],
+	que é menor que teta min. Se isso for verdade [iv, jv] passa a ser
+	[i, j] acontece    */
 void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 	if (hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
@@ -227,6 +240,10 @@ void inspeciona_vizinho_quando_esta_frio(int i, int j) {
 	}
 }
 
+/* 	A função recebe a posição de um hexágono, verifica se ele
+	possui uma temperatura superior à do hexágono na posição [iv, jv],
+	que é maior que teta max. Se isso for verdade [iv, jv] passa a ser
+	[i, j] acontece    */
 void inspeciona_vizinho_quando_esta_quente(int i, int j) {
 	if (hexes[i][j].id == NADA) {
 		calcula_temperatura(i, j);
@@ -237,6 +254,9 @@ void inspeciona_vizinho_quando_esta_quente(int i, int j) {
 	}
 }
 
+/*	Nesta função são são decrementados os contadores de ciclos das fontes de
+	frio e calor e elas também são geradas e colocadas em hexágonos distintos
+	da matriz. */
 void etapa_inicial_simulacao() {
 	int i, j;
 
@@ -261,6 +281,7 @@ void etapa_inicial_simulacao() {
 	}
 }
 
+/* */
 void etapa_joaninhas_simulacao() {
 	int i, j, f;
 
